@@ -1,5 +1,5 @@
 # FastServe
-FastServe is a Python library that lets you build gRPC services quickly and easily without writing protobuf files.
+FastServe is a Python library that lets you build gRPC services quickly and easily without hand-writing protobuf files.
 
 It automatically generates protobuf files that match the method signature of the Python object provided when starting the server.
 
