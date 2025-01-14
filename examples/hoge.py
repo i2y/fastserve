@@ -1,3 +1,4 @@
+from datetime import datetime
 import grpc
 from grpc import ServicerContext
 
@@ -35,6 +36,7 @@ class HogeService:
 class MyMessage(Message):
     name: str
     age: int
+    o: int | datetime
 
 
 class Request(Message):
@@ -48,7 +50,7 @@ class Response(Message):
     name: str
     age: int
     d: dict[str, str]
-    m: MyMessage
+    m: MyMessage | str
 
 
 class FugaService:
@@ -61,6 +63,10 @@ class CustomInterceptor(grpc.ServerInterceptor):
         # ここで何かの処理を行う
         print(handler_call_details.method)
         return continuation(handler_call_details)
+
+
+async def app(scope, receive, send):
+    pass
 
 
 if __name__ == "__main__":
