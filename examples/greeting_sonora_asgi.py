@@ -1,4 +1,4 @@
-from fastserve.core import ASGIApp, Message
+from fastrpc.core import ASGIApp, Message
 
 
 class HelloRequest(Message):

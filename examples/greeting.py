@@ -1,4 +1,4 @@
-from fastserve.core import Server, Message
+from fastrpc.core import Server, Message
 
 
 class HelloRequest(Message):

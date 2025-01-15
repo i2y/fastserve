@@ -1,6 +1,6 @@
 import asyncio
 
-from fastserve.core import AsyncIOServer, Message
+from fastrpc.core import AsyncIOServer, Message
 
 
 class HelloRequest(Message):

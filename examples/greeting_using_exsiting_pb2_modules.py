@@ -1,4 +1,4 @@
-from fastserve.core import Server, Message
+from fastrpc.core import Server, Message
 
 import greeter_pb2_grpc, greeter_pb2
 

@@ -2,7 +2,7 @@ from datetime import datetime
 import grpc
 from grpc import ServicerContext
 
-from fastserve.core import Server, Message
+from fastrpc.core import Server, Message
 
 
 class FooRequest(Message):
