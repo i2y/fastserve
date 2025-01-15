@@ -1,19 +1,10 @@
 syntax = "proto3";
 
-package hoge.v1;
+package foo.v1;
 
 
-service HogeService {
-    rpc Bar (BarRequest) returns (BarResponse);
+service FooService {
     rpc Foo (FooRequest) returns (FooResponse);
-}
-
-message BarResponse {
-    repeated string names = 1;
-}
-
-message BarRequest {
-    repeated string names = 1;
 }
 
 message FooResponse {

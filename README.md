@@ -1,189 +1,194 @@
-# FastServe
-FastServe is a Python library that lets you build gRPC services quickly and easily without hand-writing protobuf files.
+# FastRPC
 
-It automatically generates protobuf files that match the method signature of the Python object provided when starting the server.
+**FastRPC** is a Python library designed to simplify the creation of gRPC services. It eliminates the need to manually write protobuf files by dynamically generating them based on Python object method signatures.
 
-Then, it uses the grpcio-tool to generate modules include server and client stub classes from the created protobuf files.
+FastRPC leverages modern tools like `pydantic` for type validation and integrates health checks using `grpc_health.v1`. It supports both synchronous and asynchronous gRPC communication, as well as WSGI/ASGI-based gRPC-Web services.
 
-By dynamically generating a subclass of the server stub class and associating its methods with the original Python object's methods, it builds the gRPC server.
+## Key Features
+
+- **Automatic Protobuf Generation:** Automatically creates protobuf files matching the method signatures of your Python objects.
+- **Dynamic Code Generation:** Generates server and client stubs using `grpcio-tools`.
+- **Health Checking:** Built-in support for gRPC health checks using `grpc_health.v1`.
+- **Serevr Reflection:** Built-in support for gRPC server reflection.
+- **Pydantic Integration:** Uses `pydantic` for robust type validation and serialization.
+- **Asynchronous Support:** Easily create asynchronous gRPC services with `AsyncIOServer`.
+- **WSGI/ASGI Support:** Create gRPC-Web services that can be run as WSGI or ASGI applications powered by `sonora`.
 
 ## Installation
-Install it using your favorite package manager. Below is the method for installation using pip.
+
+Install FastRPC via pip:
 
 ```bash
 pip install fastserve
 ```
 
-## Usage
-Here's an example of creating a dead simple greeter service.
+## Getting Started
 
-`greeting.py`
+### Synchronous Service Example
+
 ```python
 from fastserve.core import Server, Message
-
 
 class HelloRequest(Message):
     name: str
 
-
 class HelloReply(Message):
     message: str
-
 
 class Greeter:
     def say_hello(self, request: HelloRequest) -> HelloReply:
         return HelloReply(message=f"Hello, {request.name}!")
 
-
 if __name__ == "__main__":
-    s = Server()
-    s.run(Greeter())
+    server = Server()
+    server.run(Greeter())
 ```
 
-
-To start the server, run:
-```console
-$ python greeting.py
-gRPC server is running...
-```
-
-In another terminal, you can call the gRPC service:
-```console
-$ grpcurl -plaintext -d '{"name": "World"}' localhost:50051 greeter.v1.Greeter/SayHello
-{
-  "message": "Hello, World!"
-}
-```
-
-To list the services, use:
-```console
-$ grpcurl -plaintext localhost:50051 list
-greeter.v1.Greeter
-grpc.health.v1.Health
-grpc.reflection.v1alpha.ServerReflection
-```
-
-
-By the way, running this will create `greeter.proto`, `greeter_pb2.py`, and `greeter_pb2_grpc.py` in the current directory.
-The generated `greeter.proto` will look like this:
-
-```proto
-syntax = "proto3";
-
-package greeter.v1;
-
-service Greeter {
-    rpc SayHello (HelloRequest) returns (HelloReply);
-}
-
-message HelloReply {
-    string message = 1;
-}
-
-message HelloRequest {
-    string name = 1;
-}
-```
-
-You can share the generated `greeter.proto` with other services/clients written in other programming languages or Python if you want or need.
-
-
-### If You Want to Use Existing Stub Modules
-If you already have `greeter_pb2.py` and `greeter_pb2_grpc.py` and want to use them without generating, use `mount_using_pb2_modules` as shown below:
-```python
-from fastserve.core import Server, Message
-
-import greeter_pb2_grpc, greeter_pb2
-
-
-class HelloRequest(Message):
-    name: str
-
-
-class HelloReply(Message):
-    message: str
-
-
-class Greeter:
-    def say_hello(self, request: HelloRequest) -> HelloReply:
-        return HelloReply(message=f"Hello, {request.name}!")
-
-
-if __name__ == "__main__":
-    s = Server()
-    s.mount_using_pb2_modules(greeter_pb2_grpc, greeter_pb2, Greeter())
-    s.run()
-```
-
-### asyncio Version
+### Asynchronous Service Example
 
 ```python
 import asyncio
-
 from fastserve.core import AsyncIOServer, Message
-
 
 class HelloRequest(Message):
     name: str
 
-
 class HelloReply(Message):
     message: str
-
 
 class Greeter:
     async def say_hello(self, request: HelloRequest) -> HelloReply:
         return HelloReply(message=f"Hello, {request.name}!")
 
+if __name__ == "__main__":
+    server = AsyncIOServer()
+    loop = asyncio.get_event_loop()
+    loop.run_until_complete(server.run(Greeter()))
+```
+
+### ASGI Application Example
+
+```python
+from fastserve.core import ASGIApp, Message
+
+class HelloRequest(Message):
+    name: str
+
+class HelloReply(Message):
+    message: str
+
+class Greeter:
+    def say_hello(self, request: HelloRequest) -> HelloReply:
+        return HelloReply(message=f"Hello, {request.name}!")
+
+app = ASGIApp(Greeter())
+```
+
+## Advanced Features
+
+### Multiple Services with Custom Interceptors
+
+FastRPC supports defining and running multiple services in a single server:
+
+```python
+from datetime import datetime
+import grpc
+from grpc import ServicerContext
+
+from fastserve.core import Server, Message
+
+
+class FooRequest(Message):
+    name: str
+    age: int
+    d: dict[str, str]
+
+
+class FooResponse(Message):
+    name: str
+    age: int
+    d: dict[str, str]
+
+
+class BarRequest(Message):
+    names: list[str]
+
+
+class BarResponse(Message):
+    names: list[str]
+
+
+class FooService:
+    def foo(self, request: FooRequest) -> FooResponse:
+        return FooResponse(name=request.name, age=request.age, d=request.d)
+
+
+class MyMessage(Message):
+    name: str
+    age: int
+    o: int | datetime
+
+
+class Request(Message):
+    name: str
+    age: int
+    d: dict[str, str]
+    m: MyMessage
+
+
+class Response(Message):
+    name: str
+    age: int
+    d: dict[str, str]
+    m: MyMessage | str
+
+
+class BarService:
+    def bar(self, req: BarRequest, ctx: ServicerContext) -> BarResponse:
+        return BarResponse(names=req.names)
+
+
+class CustomInterceptor(grpc.ServerInterceptor):
+    def intercept_service(self, continuation, handler_call_details):
+        # do something
+        print(handler_call_details.method)
+        return continuation(handler_call_details)
+
+
+async def app(scope, receive, send):
+    pass
+
 
 if __name__ == "__main__":
-    s = AsyncIOServer()
-    loop = asyncio.get_event_loop()
-    loop.run_until_complete(s.run(Greeter()))
+    s = Server(10, CustomInterceptor())
+    s.run(
+        FooService(),
+        BarService(),
+    )
 ```
 
-### If You Only Want to Generate protobuf Files and Stub Modules
+### [TODO] Custom Health Check
+TODO
 
-You can execute the `fastserve.core` module to only generate the protobuf files and stub modules as follows:
+### Protobuf file generation
+You can generate protobuf files for a given module and a specified class using `core.py`:
 
-```console
-$ python -m fastserve.core greeting.py Greeter
+```bash
+python core.py a_module.py aClass
 ```
 
-Doing so will create `greeter.proto`, `greeter_pb2.py`, and `greeter_pb2_grpc.py` in the current directory.
+## [WIP] Contributing
 
+Contributions are welcome! To get started:
 
-### Note
-- Yuo can serve multiple services by passing multiple objects to `Server.run` or calling `Server.mount` multiple times.
-- You can specify the port number with `Server.set_port` method before calling `run`.
-- You can set interceptors with `Server` constructor's `interceptors` argument.
+1. Fork the repository.
+2. Create a new branch for your feature (`git checkout -b feature-name`).
+3. Commit your changes (`git commit -m 'Add feature'`).
+4. Push to the branch (`git push origin feature-name`).
+5. Open a pull request.
 
-
-## Mapping of Python Types to Protobuf Types
-The following table shows the mapping of Python types to protobuf types.
-
-| Python Type | Protobuf Type |
-|:-----------:|:-------------:|
-| `int` | `int32` |
-| `float` | `float` |
-| `str` | `string` |
-| `bytes` | `bytes` |
-| `bool` | `bool` |
-| `List[T]` | `repeated T` |
-| `Dict[str, T]` | `map<string, T>` |
-| `Dict[int, T]` | `map<int32, T>` |
-| `fastserve.core.Message` | `message` |
-
-## TODO
-- [ ] Support for mapping of `types.UnionType` to `oneof`
-- [ ] Support for mapping of `typing.Optional` or `typing.Union[T, None]` to `oneof`
-- [ ] Support for mapping of `enum.Enum` to `enum`
-- [ ] Support for mapping of `datetime.datetime` to `google.protobuf.Timestamp`
-- [ ] Support for mapping of `datetime.timedelta` to `google.protobuf.Duration`
-
+[WIP] Please make sure to follow the [Contribution Guidelines](CONTRIBUTING.md).
 
 ## License
-MIT License
 
-## Author
-Yasushi Itoh (i2y)
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.

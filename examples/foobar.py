@@ -25,12 +25,9 @@ class BarResponse(Message):
     names: list[str]
 
 
-class HogeService:
+class FooService:
     def foo(self, request: FooRequest) -> FooResponse:
         return FooResponse(name=request.name, age=request.age, d=request.d)
-
-    def bar(self, req: BarRequest, ctx: ServicerContext) -> BarResponse:
-        return BarResponse(names=req.names)
 
 
 class MyMessage(Message):
@@ -53,14 +50,14 @@ class Response(Message):
     m: MyMessage | str
 
 
-class FugaService:
-    def foo(self, request: Request) -> Response:
-        return Response(name=request.name, age=request.age, d=request.d, m=request.m)
+class BarService:
+    def bar(self, req: BarRequest, ctx: ServicerContext) -> BarResponse:
+        return BarResponse(names=req.names)
 
 
 class CustomInterceptor(grpc.ServerInterceptor):
     def intercept_service(self, continuation, handler_call_details):
-        # ここで何かの処理を行う
+        # do something
         print(handler_call_details.method)
         return continuation(handler_call_details)
 
@@ -71,8 +68,7 @@ async def app(scope, receive, send):
 
 if __name__ == "__main__":
     s = Server(10, CustomInterceptor())
-    # s.set_package_name("hoge.v1")
     s.run(
-        HogeService(),
-        FugaService(),
+        FooService(),
+        BarService(),
     )
