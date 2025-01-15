@@ -19,7 +19,7 @@ FastRPC leverages modern tools like `pydantic` for type validation and integrate
 Install FastRPC via pip:
 
 ```bash
-pip install fastserve
+pip install fastrpc
 ```
 
 ## Getting Started
@@ -27,7 +27,7 @@ pip install fastserve
 ### Synchronous Service Example
 
 ```python
-from fastserve.core import Server, Message
+from fastrpc.core import Server, Message
 
 class HelloRequest(Message):
     name: str
@@ -48,7 +48,7 @@ if __name__ == "__main__":
 
 ```python
 import asyncio
-from fastserve.core import AsyncIOServer, Message
+from fastrpc.core import AsyncIOServer, Message
 
 class HelloRequest(Message):
     name: str
@@ -69,7 +69,7 @@ if __name__ == "__main__":
 ### ASGI Application Example
 
 ```python
-from fastserve.core import ASGIApp, Message
+from fastrpc.core import ASGIApp, Message
 
 class HelloRequest(Message):
     name: str
@@ -95,7 +95,7 @@ from datetime import datetime
 import grpc
 from grpc import ServicerContext
 
-from fastserve.core import Server, Message
+from fastrpc.core import Server, Message
 
 
 class FooRequest(Message):
