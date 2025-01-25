@@ -36,6 +36,7 @@ class HelloReply(Message):
     message: str
 
 class Greeter:
+    # Define methods that accepts a request and returns a response.
     def say_hello(self, request: HelloRequest) -> HelloReply:
         return HelloReply(message=f"Hello, {request.name}!")
 
