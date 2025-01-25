@@ -4,10 +4,10 @@ from greeter_pb2_grpc import GreeterStub
 
 
 def run():
-    channel = grpc.insecure_channel("localhost:50051")
-    stub = GreeterStub(channel)
-    response = stub.SayHello(HelloRequest(name="World"))
-    print(response.message)
+    with grpc.insecure_channel("localhost:50051") as channel:
+        stub = GreeterStub(channel)
+        response = stub.SayHello(HelloRequest(name="World"))
+        print(response.message)
 
 
 if __name__ == "__main__":

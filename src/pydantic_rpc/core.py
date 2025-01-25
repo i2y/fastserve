@@ -341,8 +341,6 @@ def python_value_to_proto(field_type: Type, value, pb2_module):
     # If union -> oneof
     if is_union_type(field_type):
         # Flatten union and check which type matches. If matched, return converted value.
-        from typing import get_args
-
         for sub_type in flatten_union(field_type):
             if sub_type == datetime.datetime and isinstance(value, datetime.datetime):
                 return python_to_timestamp(value)
@@ -915,15 +913,13 @@ class WSGIApp:
         self._port = 3000
 
     def mount(self, obj: object, package_name: str = ""):
-        """Generate and compile proto files, then mount the async service implementation."""
+        """Generate and compile proto files, then mount the service implementation."""
         pb2_grpc_module, pb2_module = generate_and_compile_proto(obj, package_name)
         self.mount_using_pb2_modules(pb2_grpc_module, pb2_module, obj)
 
     def mount_using_pb2_modules(self, pb2_grpc_module, pb2_module, obj: object):
-        """Connect the compiled gRPC modules with the async service implementation."""
-        concreteServiceClass = connect_obj_with_stub_async(
-            pb2_grpc_module, pb2_module, obj
-        )
+        """Connect the compiled gRPC modules with the service implementation."""
+        concreteServiceClass = connect_obj_with_stub(pb2_grpc_module, pb2_module, obj)
         service_name = obj.__class__.__name__
         service_impl = concreteServiceClass()
         getattr(pb2_grpc_module, f"add_{service_name}Servicer_to_server")(
