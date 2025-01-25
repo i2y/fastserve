@@ -1,6 +1,6 @@
 import asyncio
 
-from fastrpc.core import AsyncIOServer, Message
+from pydantic_rpc.core import AsyncIOServer, Message
 
 
 class HelloRequest(Message):

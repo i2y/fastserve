@@ -81,7 +81,21 @@ class Greeter:
     def say_hello(self, request: HelloRequest) -> HelloReply:
         return HelloReply(message=f"Hello, {request.name}!")
 
-app = ASGIApp(Greeter())
+
+async def app(scope, receive, send):
+    """ASGI application.
+
+    Args:
+        scope (dict): The ASGI scope.
+        receive (callable): The receive function.
+        send (callable): The send function.
+    """
+    pass
+
+# Please note that `app` is any ASGI application, such as FastAPI or Starlette.
+
+app = ASGIApp(app)
+app.mount_objs(Greeter())
 ```
 
 
@@ -100,7 +114,19 @@ class Greeter:
     def say_hello(self, request: HelloRequest) -> HelloReply:
         return HelloReply(message=f"Hello, {request.name}!")
 
-app = WSGIApp(Greeter())
+def app(environ, start_response):
+    """WSGI application.
+
+    Args:
+        environ (dict): The WSGI environment.
+        start_response (callable): The start_response function.
+    """
+    pass
+
+# Please note that `app` is any WSGI application, such as Flask or Django.
+
+app = WSGIApp(app)
+app.mount_objs(Greeter())
 ```
 
 
