@@ -31,11 +31,11 @@ grpcio==1.69.0
     # via grpcio-tools
     # via sonora
 grpcio-health-checking==1.56.2
-    # via fastrpc
+    # via pydantic-rpc
 grpcio-reflection==1.56.2
-    # via fastrpc
+    # via pydantic-rpc
 grpcio-tools==1.56.2
-    # via fastrpc
+    # via pydantic-rpc
 h11==0.14.0
     # via hypercorn
     # via wsproto
@@ -61,13 +61,13 @@ protobuf==4.23.4
     # via grpcio-reflection
     # via grpcio-tools
 pydantic==2.1.1
-    # via fastrpc
+    # via pydantic-rpc
 pydantic-core==2.4.0
     # via pydantic
 setuptools==68.0.0
     # via grpcio-tools
 sonora==0.2.3
-    # via fastrpc
+    # via pydantic-rpc
 typing-extensions==4.7.1
     # via pydantic
     # via pydantic-core

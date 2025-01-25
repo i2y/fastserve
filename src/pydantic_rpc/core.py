@@ -16,6 +16,7 @@ from typing import (
     get_args,
     get_origin,
     Union,
+    TypeAlias,
 )
 
 import grpc
@@ -37,11 +38,7 @@ from google.protobuf import timestamp_pb2, duration_pb2
 ###############################################################################
 
 
-class Message(BaseModel):
-    """A gRPC message class based on Pydantic."""
-
-    def __doc__(self):
-        return ""
+Message : TypeAlias = BaseModel
 
 
 def primitiveProtoValueToPythonValue(value):

@@ -1,11 +1,13 @@
 from datetime import datetime
+
+from pydantic import BaseModel
 import grpc
 from grpc import ServicerContext
 
-from fastrpc.core import Server, Message
+from pydantic_rpc.core import Server, Message
 
 
-class FooRequest(Message):
+class FooRequest(BaseModel):
     name: str
     age: int
     d: dict[str, str]

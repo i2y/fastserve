@@ -1,8 +1,8 @@
-# FastRPC
+# PydanticRPC
 
-**FastRPC** is a Python library designed to simplify the creation of gRPC services. It eliminates the need to manually write protobuf files by dynamically generating them based on Python object method signatures.
+**PydanticRPC** is a Python library designed to simplify the creation of gRPC services. It eliminates the need to manually write protobuf files by dynamically generating them based on Python object method signatures.
 
-FastRPC leverages modern tools like `pydantic` for type validation and integrates health checks using `grpc_health.v1`. It supports both synchronous and asynchronous gRPC communication, as well as WSGI/ASGI-based gRPC-Web services.
+PydanticRPC leverages modern tools like `pydantic` for type validation and integrates health checks using `grpc_health.v1`. It supports both synchronous and asynchronous gRPC communication, as well as WSGI/ASGI-based gRPC-Web services.
 
 ## Key Features
 
@@ -16,10 +16,10 @@ FastRPC leverages modern tools like `pydantic` for type validation and integrate
 
 ## Installation
 
-Install FastRPC via pip:
+Install PydanticRPC via pip:
 
 ```bash
-pip install fastrpc
+pip install pydantic-rpc
 ```
 
 ## Getting Started
@@ -27,7 +27,7 @@ pip install fastrpc
 ### Synchronous Service Example
 
 ```python
-from fastrpc.core import Server, Message
+from pydanticrpc.core import Server, Message
 
 class HelloRequest(Message):
     name: str
@@ -48,7 +48,7 @@ if __name__ == "__main__":
 
 ```python
 import asyncio
-from fastrpc.core import AsyncIOServer, Message
+from pydanticrpc.core import AsyncIOServer, Message
 
 class HelloRequest(Message):
     name: str
@@ -69,7 +69,7 @@ if __name__ == "__main__":
 ### ASGI Application Example
 
 ```python
-from fastrpc.core import ASGIApp, Message
+from pydanticrpc.core import ASGIApp, Message
 
 class HelloRequest(Message):
     name: str
@@ -88,14 +88,14 @@ app = ASGIApp(Greeter())
 
 ### Multiple Services with Custom Interceptors
 
-FastRPC supports defining and running multiple services in a single server:
+PydanticRPC supports defining and running multiple services in a single server:
 
 ```python
 from datetime import datetime
 import grpc
 from grpc import ServicerContext
 
-from fastrpc.core import Server, Message
+from pydanticrpc.core import Server, Message
 
 
 class FooRequest(Message):
