@@ -27,7 +27,7 @@ pip install pydantic-rpc
 ### Synchronous Service Example
 
 ```python
-from pydanticrpc.core import Server, Message
+from pydantic_rpc import Server, Message
 
 class HelloRequest(Message):
     name: str
@@ -48,17 +48,22 @@ if __name__ == "__main__":
 
 ```python
 import asyncio
-from pydanticrpc.core import AsyncIOServer, Message
+
+from pydantic_rpc import AsyncIOServer, Message
+
 
 class HelloRequest(Message):
     name: str
 
+
 class HelloReply(Message):
     message: str
+
 
 class Greeter:
     async def say_hello(self, request: HelloRequest) -> HelloReply:
         return HelloReply(message=f"Hello, {request.name}!")
+
 
 if __name__ == "__main__":
     server = AsyncIOServer()
@@ -69,7 +74,7 @@ if __name__ == "__main__":
 ### ASGI Application Example
 
 ```python
-from pydanticrpc.core import ASGIApp, Message
+from pydantic_rpc import ASGIApp, Message
 
 class HelloRequest(Message):
     name: str
@@ -102,7 +107,7 @@ app.mount_objs(Greeter())
 ### WSGI Application Example
 
 ```python
-from pydanticrpc.core import WSGIApp, Message
+from pydantic_rpc import WSGIApp, Message
 
 class HelloRequest(Message):
     name: str
@@ -141,7 +146,7 @@ from datetime import datetime
 import grpc
 from grpc import ServicerContext
 
-from pydanticrpc.core import Server, Message
+from pydantic_rpc import Server, Message
 
 
 class FooRequest(Message):

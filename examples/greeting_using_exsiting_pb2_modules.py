@@ -1,4 +1,4 @@
-from pydantic_rpc.core import Server, Message
+from pydantic_rpc import Server, Message
 
 import greeter_pb2_grpc, greeter_pb2
 

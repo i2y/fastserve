@@ -1,4 +1,4 @@
-from pydantic_rpc.core import Server, Message
+from pydantic_rpc import Server, Message
 
 
 class HelloRequest(Message):

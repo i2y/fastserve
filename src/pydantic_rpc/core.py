@@ -38,7 +38,7 @@ from google.protobuf import timestamp_pb2, duration_pb2
 ###############################################################################
 
 
-Message : TypeAlias = BaseModel
+Message: TypeAlias = BaseModel
 
 
 def primitiveProtoValueToPythonValue(value):

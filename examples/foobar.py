@@ -4,7 +4,7 @@ from pydantic import BaseModel
 import grpc
 from grpc import ServicerContext
 
-from pydantic_rpc.core import Server, Message
+from pydantic_rpc import Server, Message
 
 
 class FooRequest(BaseModel):

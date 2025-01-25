@@ -1,4 +1,4 @@
-from pydantic_rpc.core import ASGIApp, Message
+from pydantic_rpc import ASGIApp, Message
 
 
 class HelloRequest(Message):
