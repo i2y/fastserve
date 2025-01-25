@@ -1,20 +1,20 @@
-# PydanticRPC
+# 🚀 PydanticRPC
 
 **PydanticRPC** is a Python library designed to simplify the creation of gRPC services. It eliminates the need to manually write protobuf files by dynamically generating them based on Python object method signatures.
 
 PydanticRPC leverages modern tools like `pydantic` for type validation and integrates health checks using `grpc_health.v1`. It supports both synchronous and asynchronous gRPC communication, as well as WSGI/ASGI-based gRPC-Web services.
 
-## Key Features
+## 💡 Key Features
 
-- **Automatic Protobuf Generation:** Automatically creates protobuf files matching the method signatures of your Python objects.
-- **Dynamic Code Generation:** Generates server and client stubs using `grpcio-tools`.
-- **Health Checking:** Built-in support for gRPC health checks using `grpc_health.v1`.
-- **Serevr Reflection:** Built-in support for gRPC server reflection.
-- **Pydantic Integration:** Uses `pydantic` for robust type validation and serialization.
-- **Asynchronous Support:** Easily create asynchronous gRPC services with `AsyncIOServer`.
-- **WSGI/ASGI Support:** Create gRPC-Web services that can be run as WSGI or ASGI applications powered by `sonora`.
+- 🔄 **Automatic Protobuf Generation:** Automatically creates protobuf files matching the method signatures of your Python objects.
+- ⚙️ **Dynamic Code Generation:** Generates server and client stubs using `grpcio-tools`.
+- 💚 **Health Checking:** Built-in support for gRPC health checks using `grpc_health.v1`.
+- 🔎 **Server Reflection:** Built-in support for gRPC server reflection.
+- ✅ **Pydantic Integration:** Uses `pydantic` for robust type validation and serialization.
+- ⚡ **Asynchronous Support:** Easily create asynchronous gRPC services with `AsyncIOServer`.
+- 🌐 **WSGI/ASGI Support:** Create gRPC-Web services that can be run as WSGI or ASGI applications powered by `sonora`.
 
-## Installation
+## 📦 Installation
 
 Install PydanticRPC via pip:
 
@@ -22,9 +22,9 @@ Install PydanticRPC via pip:
 pip install pydantic-rpc
 ```
 
-## Getting Started
+## 🚀 Getting Started
 
-### Synchronous Service Example
+### 🔧 Synchronous Service Example
 
 ```python
 from pydantic_rpc import Server, Message
@@ -44,7 +44,7 @@ if __name__ == "__main__":
     server.run(Greeter())
 ```
 
-### Asynchronous Service Example
+### ⚙️ Asynchronous Service Example
 
 ```python
 import asyncio
@@ -71,7 +71,7 @@ if __name__ == "__main__":
     loop.run_until_complete(server.run(Greeter()))
 ```
 
-### ASGI Application Example
+### 🌐 ASGI Application Example
 
 ```python
 from pydantic_rpc import ASGIApp, Message
@@ -103,8 +103,7 @@ app = ASGIApp(app)
 app.mount_objs(Greeter())
 ```
 
-
-### WSGI Application Example
+### 🌐 WSGI Application Example
 
 ```python
 from pydantic_rpc import WSGIApp, Message
@@ -134,10 +133,9 @@ app = WSGIApp(app)
 app.mount_objs(Greeter())
 ```
 
+## 💎 Advanced Features
 
-## Advanced Features
-
-### Multiple Services with Custom Interceptors
+### 🔗 Multiple Services with Custom Interceptors
 
 PydanticRPC supports defining and running multiple services in a single server:
 
@@ -218,16 +216,18 @@ if __name__ == "__main__":
     )
 ```
 
-### [TODO] Custom Health Check
+### 🩺 [TODO] Custom Health Check
+
 TODO
 
-### Protobuf file generation
+### 🗄️ Protobuf file generation
+
 You can generate protobuf files for a given module and a specified class using `core.py`:
 
 ```bash
 python core.py a_module.py aClass
 ```
 
-## License
+## 📜 License
 
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
