@@ -84,6 +84,26 @@ class Greeter:
 app = ASGIApp(Greeter())
 ```
 
+
+### WSGI Application Example
+
+```python
+from pydanticrpc.core import WSGIApp, Message
+
+class HelloRequest(Message):
+    name: str
+
+class HelloReply(Message):
+    message: str
+
+class Greeter:
+    def say_hello(self, request: HelloRequest) -> HelloReply:
+        return HelloReply(message=f"Hello, {request.name}!")
+
+app = WSGIApp(Greeter())
+```
+
+
 ## Advanced Features
 
 ### Multiple Services with Custom Interceptors
@@ -176,18 +196,6 @@ You can generate protobuf files for a given module and a specified class using `
 ```bash
 python core.py a_module.py aClass
 ```
-
-## [WIP] Contributing
-
-Contributions are welcome! To get started:
-
-1. Fork the repository.
-2. Create a new branch for your feature (`git checkout -b feature-name`).
-3. Commit your changes (`git commit -m 'Add feature'`).
-4. Push to the branch (`git push origin feature-name`).
-5. Open a pull request.
-
-[WIP] Please make sure to follow the [Contribution Guidelines](CONTRIBUTING.md).
 
 ## License
 
