@@ -840,10 +840,21 @@ def get_rpc_methods(obj: object) -> list[tuple[str, types.MethodType]]:
     ]
 
 
+def is_skip_generation() -> bool:
+    """Check if the proto file and code generation should be skipped."""
+    return os.getenv("PYDANTIC_RPC_SKIP_GENERATION", "false").lower() == "true"
+
+
 def generate_and_compile_proto(obj: object, package_name: str = ""):
-    """
-    Generate a .proto file from a Python service object, then compile it using protoc.
-    """
+    if is_skip_generation():
+        import importlib
+
+        pb2_module = importlib.import_module(f"{obj.__class__.__name__.lower()}_pb2")
+        pb2_grpc_module = importlib.import_module(
+            f"{obj.__class__.__name__.lower()}_pb2_grpc"
+        )
+        return pb2_grpc_module, pb2_module
+
     klass = obj.__class__
     proto_file = generate_proto(obj, package_name)
     proto_file_name = klass.__name__.lower() + ".proto"
@@ -859,6 +870,33 @@ def generate_and_compile_proto(obj: object, package_name: str = ""):
     if gen_grpc is None:
         raise Exception("Generating grpc code")
     return gen_grpc, gen_pb
+
+
+def generate_and_compile_proto_using_connecpy(obj: object, package_name: str = ""):
+    if is_skip_generation():
+        import importlib
+
+        pb2_module = importlib.import_module(f"{obj.__class__.__name__.lower()}_pb2")
+        connecpy_module = importlib.import_module(
+            f"{obj.__class__.__name__.lower()}_connecpy"
+        )
+        return connecpy_module, pb2_module
+
+    klass = obj.__class__
+    proto_file = generate_proto(obj, package_name)
+    proto_file_name = klass.__name__.lower() + ".proto"
+
+    with open(proto_file_name, "w", encoding="utf-8") as f:
+        f.write(proto_file)
+
+    gen_pb = generate_pb_code(proto_file_name, ".", ".")
+    if gen_pb is None:
+        raise Exception("Generating pb code")
+
+    gen_connecpy = generate_connecpy_code(proto_file_name, ".")
+    if gen_connecpy is None:
+        raise Exception("Generating Connecpy code")
+    return gen_connecpy, gen_pb
 
 
 ###############################################################################
@@ -1087,27 +1125,6 @@ class ASGIApp:
     async def __call__(self, scope, receive, send):
         """ASGI entry point."""
         await self._app(scope, receive, send)
-
-
-def generate_and_compile_proto_using_connecpy(obj: object, package_name: str = ""):
-    """
-    Generate a .proto file from a Python service object, then compile it using protoc.
-    """
-    klass = obj.__class__
-    proto_file = generate_proto(obj, package_name)
-    proto_file_name = klass.__name__.lower() + ".proto"
-
-    with open(proto_file_name, "w", encoding="utf-8") as f:
-        f.write(proto_file)
-
-    gen_pb = generate_pb_code(proto_file_name, ".", ".")
-    if gen_pb is None:
-        raise Exception("Generating pb code")
-
-    gen_connecpy = generate_connecpy_code(proto_file_name, ".")
-    if gen_connecpy is None:
-        raise Exception("Generating connecpy code")
-    return gen_connecpy, gen_pb
 
 
 def get_connecpy_server_class(connecpy_module, service_name):

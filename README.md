@@ -154,6 +154,14 @@ This will launch a Connecpy-based ASGI application that uses the same Pydantic m
 >     go install github.com/connecpy/protoc-gen-connecpy@latest
 >     ```
 
+## ♻️ Skipping Protobuf Generation
+By default, PydanticRPC generates .proto files and code at runtime. If you wish to skip the code-generation step (for example, in production environment), set the environment variable below:
+
+```bash
+export PYDANTIC_RPC_SKIP_GENERATION=true
+```
+
+When this variable is set to "true", PydanticRPC will load existing pre-generated modules rather than generating them on the fly.
 
 ## 💎 Advanced Features
 
