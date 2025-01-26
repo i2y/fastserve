@@ -250,6 +250,9 @@ You can generate protobuf files for a given module and a specified class using `
 python core.py a_module.py aClass
 ```
 
+Using this generated proto file and tools as `protoc`, `buf` and `BSR`, you could generate code for any desired language other than Python.
+
+
 ## 📜 License
 
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
