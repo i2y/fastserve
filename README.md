@@ -144,6 +144,16 @@ rye run python greeting_connecpy.py
 
 This will launch a Connecpy-based ASGI application that uses the same Pydantic models to serve Connect-RPC requests.
 
+> [!NOTE]
+> Please install `protoc-gen-connecpy` to run the Connecpy example.
+>
+> 1. Install Go.
+>     - Please follow the instruction described in https://go.dev/doc/install.
+> 2. Install `protoc-gen-connecpy`:
+>     ```bash
+>     go install github.com/connecpy/protoc-gen-connecpy@latest
+>     ```
+
 
 ## 💎 Advanced Features
 
