@@ -101,7 +101,7 @@ async def app(scope, receive, send):
 # Please note that `app` is any ASGI application, such as FastAPI or Starlette.
 
 app = ASGIApp(app)
-app.mount_objs(Greeter())
+app.mount(Greeter())
 ```
 
 ### 🌐 WSGI Application Example
@@ -131,8 +131,19 @@ def app(environ, start_response):
 # Please note that `app` is any WSGI application, such as Flask or Django.
 
 app = WSGIApp(app)
-app.mount_objs(Greeter())
+app.mount(Greeter())
 ```
+
+### 🏆 Connecpy (Connect-RPC) Example
+
+PydanticRPC also partially supports Connect-RPC via connecpy. Check out “greeting_connecpy.py” for an example:
+
+```bash
+rye run python greeting_connecpy.py
+```
+
+This will launch a Connecpy-based ASGI application that uses the same Pydantic models to serve Connect-RPC requests.
+
 
 ## 💎 Advanced Features
 
