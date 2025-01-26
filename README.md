@@ -1,18 +1,20 @@
 # 🚀 PydanticRPC
 
-**PydanticRPC** is a Python library designed to simplify the creation of gRPC services. It eliminates the need to manually write protobuf files by dynamically generating them based on Python object method signatures.
-
-PydanticRPC leverages modern tools like `pydantic` for type validation and integrates health checks using `grpc_health.v1`. It supports both synchronous and asynchronous gRPC communication, as well as WSGI/ASGI-based gRPC-Web services.
+**PydanticRPC** is a Python library that enables you to rapidly expose Pydantic models via gRPC/ConnectRPC services without writing any protobuf files. Instead, it automatically generates protobuf files on the fly from the method signatures of your Python objects and the type signatures of your Pydantic models.
 
 ## 💡 Key Features
 
 - 🔄 **Automatic Protobuf Generation:** Automatically creates protobuf files matching the method signatures of your Python objects.
 - ⚙️ **Dynamic Code Generation:** Generates server and client stubs using `grpcio-tools`.
-- 💚 **Health Checking:** Built-in support for gRPC health checks using `grpc_health.v1`.
-- 🔎 **Server Reflection:** Built-in support for gRPC server reflection.
 - ✅ **Pydantic Integration:** Uses `pydantic` for robust type validation and serialization.
-- ⚡ **Asynchronous Support:** Easily create asynchronous gRPC services with `AsyncIOServer`.
-- 🌐 **WSGI/ASGI Support:** Create gRPC-Web services that can be run as WSGI or ASGI applications powered by `sonora`.
+- **For gRPC:**
+  - 💚 **Health Checking:** Built-in support for gRPC health checks using `grpc_health.v1`.
+  - 🔎 **Server Reflection:** Built-in support for gRPC server reflection.
+  - ⚡ **Asynchronous Support:** Easily create asynchronous gRPC services with `AsyncIOServer`.
+- **For gRPC-Web:**
+  - 🌐 **WSGI/ASGI Support:** Create gRPC-Web services that can run as WSGI or ASGI applications powered by `Sonora`.
+- **For Connect-RPC:**
+  - 🌐 **Connecpy Support:** Partially supports Connect-RPC via `Connecpy`.
 
 ## 📦 Installation
 
@@ -260,6 +262,14 @@ python core.py a_module.py aClass
 
 Using this generated proto file and tools as `protoc`, `buf` and `BSR`, you could generate code for any desired language other than Python.
 
+
+## TODO
+- [ ] Streaming Support
+- [ ] Betterproto Support
+- [ ] Sonora-connect Support
+- [ ] Custom Health Check Support
+- [ ] Add more examples
+- [ ] Add tests
 
 ## 📜 License
 
