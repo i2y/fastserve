@@ -865,7 +865,11 @@ def generate_and_compile_proto(obj: object, package_name: str = ""):
         pb2_grpc_module = importlib.import_module(
             f"{obj.__class__.__name__.lower()}_pb2_grpc"
         )
-        return pb2_grpc_module, pb2_module
+
+        if pb2_grpc_module is not None and pb2_module is not None:
+            return pb2_grpc_module, pb2_module
+
+        # If the modules are not found, generate and compile the proto files.
 
     klass = obj.__class__
     proto_file = generate_proto(obj, package_name)
@@ -892,7 +896,11 @@ def generate_and_compile_proto_using_connecpy(obj: object, package_name: str = "
         connecpy_module = importlib.import_module(
             f"{obj.__class__.__name__.lower()}_connecpy"
         )
-        return connecpy_module, pb2_module
+
+        if connecpy_module is not None and pb2_module is not None:
+            return connecpy_module, pb2_module
+
+        # If the modules are not found, generate and compile the proto files.
 
     klass = obj.__class__
     proto_file = generate_proto(obj, package_name)
