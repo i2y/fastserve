@@ -2,6 +2,45 @@
 
 **PydanticRPC** is a Python library that enables you to rapidly expose Pydantic models via gRPC/ConnectRPC services without writing any protobuf files. Instead, it automatically generates protobuf files on the fly from the method signatures of your Python objects and the type signatures of your Pydantic models.
 
+
+Below is an example of a simple gRPC service that exposes a PydanticAI agent:
+
+```python
+import asyncio
+
+from pydantic_ai import Agent
+from pydantic_rpc import AsyncIOServer, Message
+
+
+# `Message` is just an alias for Pydantic's `BaseModel` class.
+class CityLocation(Message):
+    city: str
+    country: str
+
+
+class Olympics(Message):
+    year: int
+
+    def prompt(self):
+        return f"Where were the Olympics held in {self.year}?"
+
+
+class OlympicsLocationAgent:
+    def __init__(self):
+        self._agent = Agent("ollama:llama3.2", result_type=CityLocation)
+
+    async def ask(self, req: Olympics) -> CityLocation:
+        result = await self._agent.run(req.prompt())
+        return result.data
+
+
+if __name__ == "__main__":
+    s = AsyncIOServer()
+    loop = asyncio.get_event_loop()
+    loop.run_until_complete(s.run(OlympicsLocationAgent()))
+```
+
+
 ## 💡 Key Features
 
 - 🔄 **Automatic Protobuf Generation:** Automatically creates protobuf files matching the method signatures of your Python objects.

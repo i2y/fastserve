@@ -24,6 +24,7 @@ build-backend = "hatchling.build"
 managed = true
 dev-dependencies = [
     "hypercorn>=0.17.3",
+    "pydantic-ai>=0.0.20",
 ]
 
 [tool.hatch.metadata]

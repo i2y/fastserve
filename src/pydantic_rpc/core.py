@@ -224,6 +224,9 @@ def connect_obj_with_stub(pb2_grpc_module, pb2_module, service_obj: object) -> t
                 raise Exception("Method must have exactly one or two parameters")
 
     for method_name, method in get_rpc_methods(service_obj):
+        if method.__name__.startswith("_"):
+            continue
+
         a_method = implement_stub_method(method)
         setattr(ConcreteServiceClass, method_name, a_method)
 
@@ -275,6 +278,9 @@ def connect_obj_with_stub_async(pb2_grpc_module, pb2_module, obj: object) -> typ
                 raise Exception("Method must have exactly one or two parameters")
 
     for method_name, method in get_rpc_methods(obj):
+        if method.__name__.startswith("_"):
+            continue
+
         a_method = implement_stub_method(method)
         setattr(ConcreteServiceClass, method_name, a_method)
 
@@ -296,6 +302,7 @@ def connect_obj_with_stub_async_connecpy(
 
     def implement_stub_method(method):
         sig = inspect.signature(method)
+        print(type(method))
         arg_type = get_request_arg_type(sig)
         converter = generate_message_converter(arg_type)
         response_type = sig.return_annotation
@@ -328,6 +335,8 @@ def connect_obj_with_stub_async_connecpy(
                 raise Exception("Method must have exactly one or two parameters")
 
     for method_name, method in get_rpc_methods(obj):
+        if method.__name__.startswith("_"):
+            continue
         if not asyncio.iscoroutinefunction(method):
             raise Exception("Method must be async", method_name)
         a_method = implement_stub_method(method)
@@ -648,6 +657,9 @@ def generate_proto(obj: object, package_name: str = "") -> str:
             uses_duration = True
 
     for method_name, method in get_rpc_methods(obj):
+        if method.__name__.startswith("_"):
+            continue
+
         method_sig = inspect.signature(method)
         request_type = get_request_arg_type(method_sig)
         response_type = method_sig.return_annotation
