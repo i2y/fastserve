@@ -40,6 +40,40 @@ if __name__ == "__main__":
     loop.run_until_complete(s.run(OlympicsLocationAgent()))
 ```
 
+And here is an example of a simple ConnectRPC service that exposes the same agent as an ASGI application:
+
+```python
+import asyncio
+
+from pydantic_ai import Agent
+from pydantic_rpc import ConnecpyASGIApp, Message
+
+
+class CityLocation(Message):
+    city: str
+    country: str
+
+
+class Olympics(Message):
+    year: int
+
+    def prompt(self):
+        return f"Where were the Olympics held in {self.year}?"
+
+
+class OlympicsLocationAgent:
+    def __init__(self):
+        self._agent = Agent("ollama:llama3.2", result_type=CityLocation)
+
+    async def ask(self, req: Olympics) -> CityLocation:
+        result = await self._agent.run(req.prompt())
+        return result.data
+
+app = ConnecpyASGIApp()
+app.mount(OlympicsLocationAgent())
+
+```
+
 
 ## 💡 Key Features
 
