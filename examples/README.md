@@ -120,3 +120,25 @@ A gRPC client to interact with the server.
 ```bash
 rye run python foobar_client.py
 ```
+
+## 🤝 Connecpy (Connect-RPC) Example
+
+### 🔧 Server (`greeting_connecpy.py`)
+
+A Connect-RPC ASGI application using PydanticRPC + connecpy.
+
+**Usage:**
+
+```bash
+rye run hypercorn --bind :3000 greeting_connecpy:app
+```
+
+### 🔗 Client (`greeter_client_connecpy.py`)
+
+A Connect-RPC client to interact with the server.
+
+**Usage:**
+
+```bash
+rye run python greeter_client_connecpy.py
+```
