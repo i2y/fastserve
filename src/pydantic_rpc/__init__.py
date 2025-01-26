@@ -3,5 +3,6 @@ from .core import (
     AsyncIOServer,
     WSGIApp,
     ASGIApp,
+    ConnecpyASGIApp,
     Message,
 )

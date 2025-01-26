@@ -27,6 +27,7 @@ from grpc_tools import protoc
 from pydantic import BaseModel
 from sonora.wsgi import grpcWSGI
 from sonora.asgi import grpcASGI
+from connecpy.asgi import ConnecpyASGIApp as ConnecpyASGI
 
 # Protobuf Python modules for Timestamp, Duration (requires protobuf / grpcio)
 from google.protobuf import timestamp_pb2, duration_pb2
@@ -274,6 +275,61 @@ def connect_obj_with_stub_async(pb2_grpc_module, pb2_module, obj: object) -> typ
                 raise Exception("Method must have exactly one or two parameters")
 
     for method_name, method in get_rpc_methods(obj):
+        a_method = implement_stub_method(method)
+        setattr(ConcreteServiceClass, method_name, a_method)
+
+    return ConcreteServiceClass
+
+
+def connect_obj_with_stub_async_connecpy(
+    connecpy_module, pb2_module, obj: object
+) -> type:
+    """
+    Connect a Python service object to a Connecpy stub for async methods.
+    """
+    service_class = obj.__class__
+    stub_class_name = service_class.__name__
+    stub_class = getattr(connecpy_module, stub_class_name)
+
+    class ConcreteServiceClass(stub_class):
+        pass
+
+    def implement_stub_method(method):
+        sig = inspect.signature(method)
+        arg_type = get_request_arg_type(sig)
+        converter = generate_message_converter(arg_type)
+        response_type = sig.return_annotation
+        size_of_parameters = len(sig.parameters)
+
+        match size_of_parameters:
+            case 1:
+
+                async def stub_method1(self, request, context, method=method):
+                    arg = converter(request)
+                    resp_obj = await method(arg)
+                    return convert_python_message_to_proto(
+                        resp_obj, response_type, pb2_module
+                    )
+
+                return stub_method1
+
+            case 2:
+
+                async def stub_method2(self, request, context, method=method):
+                    arg = converter(request)
+                    resp_obj = await method(arg, context)
+                    return convert_python_message_to_proto(
+                        resp_obj, response_type, pb2_module
+                    )
+
+                return stub_method2
+
+            case _:
+                raise Exception("Method must have exactly one or two parameters")
+
+    for method_name, method in get_rpc_methods(obj):
+        if not asyncio.iscoroutinefunction(method):
+            raise Exception("Method must be async", method_name)
         a_method = implement_stub_method(method)
         setattr(ConcreteServiceClass, method_name, a_method)
 
@@ -711,6 +767,68 @@ def generate_grpc_code(
     return pb2_grpc_module, pb2_module
 
 
+def generate_connecpy_code(
+    proto_file: str, connecpy_out: str
+) -> types.ModuleType | None:
+    """
+    Execute the protoc command to generate Python Connecpy code from the .proto file.
+    Returns a tuple of (connecpy_module, pb2_module) on success, or None if failed.
+    """
+    command = f"-I. --connecpy_out={connecpy_out} {proto_file}"
+    exit_code = protoc.main(command.split())
+    if exit_code != 0:
+        return None
+
+    base = os.path.splitext(proto_file)[0]
+    generated_connecpy_file = f"{base}_connecpy.py"
+
+    if connecpy_out not in sys.path:
+        sys.path.append(connecpy_out)
+
+    spec = importlib.util.spec_from_file_location(
+        generated_connecpy_file, os.path.join(connecpy_out, generated_connecpy_file)
+    )
+    if spec is None:
+        return None
+    connecpy_module = importlib.util.module_from_spec(spec)
+    if spec.loader is None:
+        return None
+    spec.loader.exec_module(connecpy_module)
+
+    return connecpy_module
+
+
+def generate_pb_code(
+    proto_file: str, python_out: str, pyi_out: str
+) -> types.ModuleType | None:
+    """
+    Execute the protoc command to generate Python gRPC code from the .proto file.
+    Returns a tuple of (pb2_grpc_module, pb2_module) on success, or None if failed.
+    """
+    command = f"-I. --python_out={python_out} --pyi_out={pyi_out} {proto_file}"
+    exit_code = protoc.main(command.split())
+    if exit_code != 0:
+        return None
+
+    base = os.path.splitext(proto_file)[0]
+    generated_pb2_file = f"{base}_pb2.py"
+
+    if python_out not in sys.path:
+        sys.path.append(python_out)
+
+    spec = importlib.util.spec_from_file_location(
+        generated_pb2_file, os.path.join(python_out, generated_pb2_file)
+    )
+    if spec is None:
+        return None
+    pb2_module = importlib.util.module_from_spec(spec)
+    if spec.loader is None:
+        return None
+    spec.loader.exec_module(pb2_module)
+
+    return pb2_module
+
+
 def get_request_arg_type(sig):
     """Return the type annotation of the first parameter (request) of a method."""
     num_of_params = len(sig.parameters)
@@ -910,7 +1028,6 @@ class WSGIApp:
         self._app = grpcWSGI(app)
         self._service_names = []
         self._package_name = ""
-        self._port = 3000
 
     def mount(self, obj: object, package_name: str = ""):
         """Generate and compile proto files, then mount the service implementation."""
@@ -950,7 +1067,6 @@ class ASGIApp:
         self._app = grpcASGI(app)
         self._service_names = []
         self._package_name = ""
-        self._port = 3000
 
     def mount(self, obj: object, package_name: str = ""):
         """Generate and compile proto files, then mount the async service implementation."""
@@ -967,6 +1083,72 @@ class ASGIApp:
         getattr(pb2_grpc_module, f"add_{service_name}Servicer_to_server")(
             service_impl, self._app
         )
+        full_service_name = pb2_module.DESCRIPTOR.services_by_name[
+            service_name
+        ].full_name
+        self._service_names.append(full_service_name)
+
+    def mount_objs(self, *objs):
+        """Mount multiple service objects into this ASGI app."""
+        for obj in objs:
+            self.mount(obj, self._package_name)
+
+    async def __call__(self, scope, receive, send):
+        """ASGI entry point."""
+        await self._app(scope, receive, send)
+
+
+def generate_and_compile_proto_using_connecpy(obj: object, package_name: str = ""):
+    """
+    Generate a .proto file from a Python service object, then compile it using protoc.
+    """
+    klass = obj.__class__
+    proto_file = generate_proto(obj, package_name)
+    proto_file_name = klass.__name__.lower() + ".proto"
+
+    with open(proto_file_name, "w", encoding="utf-8") as f:
+        f.write(proto_file)
+
+    gen_pb = generate_pb_code(proto_file_name, ".", ".")
+    if gen_pb is None:
+        raise Exception("Generating pb code")
+
+    gen_connecpy = generate_connecpy_code(proto_file_name, ".")
+    if gen_connecpy is None:
+        raise Exception("Generating connecpy code")
+    return gen_connecpy, gen_pb
+
+
+def get_connecpy_server_class(connecpy_module, service_name):
+    return getattr(connecpy_module, f"{service_name}Server")
+
+
+class ConnecpyASGIApp:
+    """
+    An ASGI-compatible application that can serve Connect-RPC via Connecpy's ConnecpyASGIApp.
+    """
+
+    def __init__(self):
+        self._app = ConnecpyASGI()
+        self._service_names = []
+        self._package_name = ""
+
+    def mount(self, obj: object, package_name: str = ""):
+        """Generate and compile proto files, then mount the async service implementation."""
+        connecpy_module, pb2_module = generate_and_compile_proto_using_connecpy(
+            obj, package_name
+        )
+        self.mount_using_pb2_modules(connecpy_module, pb2_module, obj)
+
+    def mount_using_pb2_modules(self, connecpy_module, pb2_module, obj: object):
+        """Connect the compiled connecpy and pb2 modules with the async service implementation."""
+        concreteServiceClass = connect_obj_with_stub_async_connecpy(
+            connecpy_module, pb2_module, obj
+        )
+        service_name = obj.__class__.__name__
+        service_impl = concreteServiceClass()
+        connecpy_server = get_connecpy_server_class(connecpy_module, service_name)
+        self._app.add_service(connecpy_server(service=service_impl))
         full_service_name = pb2_module.DESCRIPTOR.services_by_name[
             service_name
         ].full_name
