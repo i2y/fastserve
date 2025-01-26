@@ -725,27 +725,24 @@ service {service_name} {{
     return proto_definition
 
 
-def generate_grpc_code(
-    proto_file, python_out, pyi_out, grpc_python_out
-) -> tuple | None:
+def generate_grpc_code(proto_file, grpc_python_out) -> types.ModuleType | None:
     """
     Execute the protoc command to generate Python gRPC code from the .proto file.
     Returns a tuple of (pb2_grpc_module, pb2_module) on success, or None if failed.
     """
-    command = f"-I. --python_out={python_out} --pyi_out={pyi_out} --grpc_python_out={grpc_python_out} {proto_file}"
+    command = f"-I. --grpc_python_out={grpc_python_out} {proto_file}"
     exit_code = protoc.main(command.split())
     if exit_code != 0:
         return None
 
     base = os.path.splitext(proto_file)[0]
-    generated_pb2_file = f"{base}_pb2.py"
     generated_pb2_grpc_file = f"{base}_pb2_grpc.py"
 
-    if python_out not in sys.path:
-        sys.path.append(python_out)
+    if grpc_python_out not in sys.path:
+        sys.path.append(grpc_python_out)
 
     spec = importlib.util.spec_from_file_location(
-        generated_pb2_grpc_file, os.path.join(python_out, generated_pb2_grpc_file)
+        generated_pb2_grpc_file, os.path.join(grpc_python_out, generated_pb2_grpc_file)
     )
     if spec is None:
         return None
@@ -754,17 +751,7 @@ def generate_grpc_code(
         return None
     spec.loader.exec_module(pb2_grpc_module)
 
-    spec = importlib.util.spec_from_file_location(
-        generated_pb2_file, os.path.join(python_out, generated_pb2_file)
-    )
-    if spec is None:
-        return None
-    pb2_module = importlib.util.module_from_spec(spec)
-    if spec.loader is None:
-        return None
-    spec.loader.exec_module(pb2_module)
-
-    return pb2_grpc_module, pb2_module
+    return pb2_grpc_module
 
 
 def generate_connecpy_code(
@@ -864,10 +851,14 @@ def generate_and_compile_proto(obj: object, package_name: str = ""):
     with open(proto_file_name, "w", encoding="utf-8") as f:
         f.write(proto_file)
 
-    gen = generate_grpc_code(proto_file_name, ".", ".", ".")
-    if gen is None:
-        raise Exception("Generating grpc code failed.")
-    return gen
+    gen_pb = generate_pb_code(proto_file_name, ".", ".")
+    if gen_pb is None:
+        raise Exception("Generating pb code")
+
+    gen_grpc = generate_grpc_code(proto_file_name, ".")
+    if gen_grpc is None:
+        raise Exception("Generating grpc code")
+    return gen_grpc, gen_pb
 
 
 ###############################################################################
