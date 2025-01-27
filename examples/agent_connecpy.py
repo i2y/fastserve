@@ -1,9 +1,8 @@
 import asyncio
 
-from pydantic import field_validator
-
 from hypercorn.asyncio import serve
 from hypercorn.config import Config
+from pydantic import field_validator
 from pydantic_ai import Agent
 from pydantic_rpc import ConnecpyASGIApp, Message
 
