@@ -24,10 +24,11 @@ from grpc_health.v1 import health_pb2, health_pb2_grpc
 from grpc_health.v1.health import HealthServicer
 from grpc_reflection.v1alpha import reflection
 from grpc_tools import protoc
-from pydantic import BaseModel
+from pydantic import BaseModel, ValidationError
 from sonora.wsgi import grpcWSGI
 from sonora.asgi import grpcASGI
 from connecpy.asgi import ConnecpyASGIApp as ConnecpyASGI
+from connecpy.errors import Errors
 
 # Protobuf Python modules for Timestamp, Duration (requires protobuf / grpcio)
 from google.protobuf import timestamp_pb2, duration_pb2
@@ -198,25 +199,35 @@ def connect_obj_with_stub(pb2_grpc_module, pb2_module, service_obj: object) -> t
             case 1:
 
                 def stub_method1(self, request, context, method=method):
-                    # Convert request to Python object
-                    arg = converter(request)
-                    # Invoke the actual method
-                    resp_obj = method(arg)
-                    # Convert the returned Python Message to a protobuf message
-                    return convert_python_message_to_proto(
-                        resp_obj, response_type, pb2_module
-                    )
+                    try:
+                        # Convert request to Python object
+                        arg = converter(request)
+                        # Invoke the actual method
+                        resp_obj = method(arg)
+                        # Convert the returned Python Message to a protobuf message
+                        return convert_python_message_to_proto(
+                            resp_obj, response_type, pb2_module
+                        )
+                    except ValidationError as e:
+                        return context.abort(grpc.StatusCode.INVALID_ARGUMENT, str(e))
+                    except Exception as e:
+                        return context.abort(grpc.StatusCode.INTERNAL, str(e))
 
                 return stub_method1
 
             case 2:
 
                 def stub_method2(self, request, context, method=method):
-                    arg = converter(request)
-                    resp_obj = method(arg, context)
-                    return convert_python_message_to_proto(
-                        resp_obj, response_type, pb2_module
-                    )
+                    try:
+                        arg = converter(request)
+                        resp_obj = method(arg, context)
+                        return convert_python_message_to_proto(
+                            resp_obj, response_type, pb2_module
+                        )
+                    except ValidationError as e:
+                        return context.abort(grpc.StatusCode.INVALID_ARGUMENT, str(e))
+                    except Exception as e:
+                        return context.abort(grpc.StatusCode.INTERNAL, str(e))
 
                 return stub_method2
 
@@ -255,22 +266,32 @@ def connect_obj_with_stub_async(pb2_grpc_module, pb2_module, obj: object) -> typ
             case 1:
 
                 async def stub_method1(self, request, context, method=method):
-                    arg = converter(request)
-                    resp_obj = await method(arg)
-                    return convert_python_message_to_proto(
-                        resp_obj, response_type, pb2_module
-                    )
+                    try:
+                        arg = converter(request)
+                        resp_obj = await method(arg)
+                        return convert_python_message_to_proto(
+                            resp_obj, response_type, pb2_module
+                        )
+                    except ValidationError as e:
+                        await context.abort(grpc.StatusCode.INVALID_ARGUMENT, str(e))
+                    except Exception as e:
+                        await context.abort(grpc.StatusCode.INTERNAL, str(e))
 
                 return stub_method1
 
             case 2:
 
                 async def stub_method2(self, request, context, method=method):
-                    arg = converter(request)
-                    resp_obj = await method(arg, context)
-                    return convert_python_message_to_proto(
-                        resp_obj, response_type, pb2_module
-                    )
+                    try:
+                        arg = converter(request)
+                        resp_obj = await method(arg, context)
+                        return convert_python_message_to_proto(
+                            resp_obj, response_type, pb2_module
+                        )
+                    except ValidationError as e:
+                        await context.abort(grpc.StatusCode.INVALID_ARGUMENT, str(e))
+                    except Exception as e:
+                        await context.abort(grpc.StatusCode.INTERNAL, str(e))
 
                 return stub_method2
 
@@ -302,7 +323,6 @@ def connect_obj_with_stub_async_connecpy(
 
     def implement_stub_method(method):
         sig = inspect.signature(method)
-        print(type(method))
         arg_type = get_request_arg_type(sig)
         converter = generate_message_converter(arg_type)
         response_type = sig.return_annotation
@@ -312,22 +332,32 @@ def connect_obj_with_stub_async_connecpy(
             case 1:
 
                 async def stub_method1(self, request, context, method=method):
-                    arg = converter(request)
-                    resp_obj = await method(arg)
-                    return convert_python_message_to_proto(
-                        resp_obj, response_type, pb2_module
-                    )
+                    try:
+                        arg = converter(request)
+                        resp_obj = await method(arg)
+                        return convert_python_message_to_proto(
+                            resp_obj, response_type, pb2_module
+                        )
+                    except ValidationError as e:
+                        await context.abort(Errors.InvalidArgument, str(e))
+                    except Exception as e:
+                        await context.abort(Errors.Internal, str(e))
 
                 return stub_method1
 
             case 2:
 
                 async def stub_method2(self, request, context, method=method):
-                    arg = converter(request)
-                    resp_obj = await method(arg, context)
-                    return convert_python_message_to_proto(
-                        resp_obj, response_type, pb2_module
-                    )
+                    try:
+                        arg = converter(request)
+                        resp_obj = await method(arg, context)
+                        return convert_python_message_to_proto(
+                            resp_obj, response_type, pb2_module
+                        )
+                    except ValidationError as e:
+                        await context.abort(Errors.InvalidArgument, str(e))
+                    except Exception as e:
+                        await context.abort(Errors.Internal, str(e))
 
                 return stub_method2
 

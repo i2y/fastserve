@@ -1,5 +1,7 @@
 import asyncio
 
+from pydantic import field_validator
+
 from hypercorn.asyncio import serve
 from hypercorn.config import Config
 from pydantic_ai import Agent
@@ -16,6 +18,16 @@ class Olympics(Message):
 
     def prompt(self):
         return f"Where were the Olympics held in {self.year}?"
+
+    @field_validator("year")
+    def validate_year(cls, value):
+        if value < 1896:
+            raise ValueError("The first modern Olympics was held in 1896.")
+
+        if value % 4 != 0:
+            raise ValueError("The Olympics are held every 4 years.")
+
+        return value
 
 
 class OlympicsLocationAgent:
