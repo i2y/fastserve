@@ -17,7 +17,9 @@ from typing import (
     get_origin,
     Union,
     TypeAlias,
+    # AsyncIterator,  # Add if not already present
 )
+from collections.abc import AsyncIterator
 
 import grpc
 from grpc_health.v1 import health_pb2, health_pb2_grpc
@@ -261,6 +263,50 @@ def connect_obj_with_stub_async(pb2_grpc_module, pb2_module, obj: object) -> typ
         converter = generate_message_converter(arg_type)
         response_type = sig.return_annotation
         size_of_parameters = len(sig.parameters)
+
+        if is_stream_type(response_type):
+            item_type = get_args(response_type)[0]
+            match size_of_parameters:
+                case 1:
+
+                    async def stub_method_stream1(
+                        self, request, context, method=method
+                    ):
+                        try:
+                            arg = converter(request)
+                            async for resp_obj in method(arg):
+                                yield convert_python_message_to_proto(
+                                    resp_obj, item_type, pb2_module
+                                )
+                        except ValidationError as e:
+                            await context.abort(
+                                grpc.StatusCode.INVALID_ARGUMENT, str(e)
+                            )
+                        except Exception as e:
+                            await context.abort(grpc.StatusCode.INTERNAL, str(e))
+
+                    return stub_method_stream1
+                case 2:
+
+                    async def stub_method_stream2(
+                        self, request, context, method=method
+                    ):
+                        try:
+                            arg = converter(request)
+                            async for resp_obj in method(arg, context):
+                                yield convert_python_message_to_proto(
+                                    resp_obj, item_type, pb2_module
+                                )
+                        except ValidationError as e:
+                            await context.abort(
+                                grpc.StatusCode.INVALID_ARGUMENT, str(e)
+                            )
+                        except Exception as e:
+                            await context.abort(grpc.StatusCode.INTERNAL, str(e))
+
+                    return stub_method_stream2
+                case _:
+                    raise Exception("Method must have exactly one or two parameters")
 
         match size_of_parameters:
             case 1:
@@ -659,6 +705,14 @@ def generate_message_definition(
     return msg_def, refs
 
 
+def is_stream_type(annotation: Type) -> bool:
+    return get_origin(annotation) is AsyncIterator
+
+
+def is_generic_alias(annotation: Type) -> bool:
+    return get_origin(annotation) is not None
+
+
 def generate_proto(obj: object, package_name: str = "") -> str:
     """
     Generate a .proto definition from a service class.
@@ -702,6 +756,11 @@ def generate_proto(obj: object, package_name: str = "") -> str:
                 continue
             done_messages.add(mt)
 
+            if is_stream_type(mt):
+                item_type = get_args(mt)[0]
+                message_types.append(item_type)
+                continue
+
             for _, field_info in mt.model_fields.items():
                 t = field_info.annotation
                 if is_union_type(t):
@@ -732,9 +791,16 @@ def generate_proto(obj: object, package_name: str = "") -> str:
         if method_docstr:
             for comment_line in comment_out(method_docstr):
                 rpc_definitions.append(comment_line)
-        rpc_definitions.append(
-            f"rpc {method_name} ({request_type.__name__}) returns ({response_type.__name__});"
-        )
+
+        if is_stream_type(response_type):
+            item_type = get_args(response_type)[0]
+            rpc_definitions.append(
+                f"rpc {method_name} ({request_type.__name__}) returns (stream {item_type.__name__});"
+            )
+        else:
+            rpc_definitions.append(
+                f"rpc {method_name} ({request_type.__name__}) returns ({response_type.__name__});"
+            )
 
     if not package_name:
         if service_name.endswith("Service"):

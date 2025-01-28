@@ -3,10 +3,10 @@
 
 import grpc
 
-import olympicslocationagent_pb2 as olympicslocationagent__pb2
+import olympicsagent_pb2 as olympicsagent__pb2
 
 
-class OlympicsLocationAgentStub(object):
+class OlympicsAgentStub(object):
     """Missing associated documentation comment in .proto file."""
 
     def __init__(self, channel):
@@ -16,18 +16,18 @@ class OlympicsLocationAgentStub(object):
             channel: A grpc.Channel.
         """
         self.Ask = channel.unary_unary(
-            "/olympicslocationagent.v1.OlympicsLocationAgent/Ask",
-            request_serializer=olympicslocationagent__pb2.Olympics.SerializeToString,
-            response_deserializer=olympicslocationagent__pb2.CityLocation.FromString,
+            "/olympicsagent.v1.OlympicsAgent/Ask",
+            request_serializer=olympicsagent__pb2.OlympicsQuery.SerializeToString,
+            response_deserializer=olympicsagent__pb2.CityLocation.FromString,
         )
         self.AskStream = channel.unary_stream(
-            "/olympicslocationagent.v1.OlympicsLocationAgent/AskStream",
-            request_serializer=olympicslocationagent__pb2.Duration.SerializeToString,
-            response_deserializer=olympicslocationagent__pb2.Result.FromString,
+            "/olympicsagent.v1.OlympicsAgent/AskStream",
+            request_serializer=olympicsagent__pb2.OlympicsDurationQuery.SerializeToString,
+            response_deserializer=olympicsagent__pb2.StreamingResult.FromString,
         )
 
 
-class OlympicsLocationAgentServicer(object):
+class OlympicsAgentServicer(object):
     """Missing associated documentation comment in .proto file."""
 
     def Ask(self, request, context):
@@ -43,27 +43,27 @@ class OlympicsLocationAgentServicer(object):
         raise NotImplementedError("Method not implemented!")
 
 
-def add_OlympicsLocationAgentServicer_to_server(servicer, server):
+def add_OlympicsAgentServicer_to_server(servicer, server):
     rpc_method_handlers = {
         "Ask": grpc.unary_unary_rpc_method_handler(
             servicer.Ask,
-            request_deserializer=olympicslocationagent__pb2.Olympics.FromString,
-            response_serializer=olympicslocationagent__pb2.CityLocation.SerializeToString,
+            request_deserializer=olympicsagent__pb2.OlympicsQuery.FromString,
+            response_serializer=olympicsagent__pb2.CityLocation.SerializeToString,
         ),
         "AskStream": grpc.unary_stream_rpc_method_handler(
             servicer.AskStream,
-            request_deserializer=olympicslocationagent__pb2.Duration.FromString,
-            response_serializer=olympicslocationagent__pb2.Result.SerializeToString,
+            request_deserializer=olympicsagent__pb2.OlympicsDurationQuery.FromString,
+            response_serializer=olympicsagent__pb2.StreamingResult.SerializeToString,
         ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
-        "olympicslocationagent.v1.OlympicsLocationAgent", rpc_method_handlers
+        "olympicsagent.v1.OlympicsAgent", rpc_method_handlers
     )
     server.add_generic_rpc_handlers((generic_handler,))
 
 
 # This class is part of an EXPERIMENTAL API.
-class OlympicsLocationAgent(object):
+class OlympicsAgent(object):
     """Missing associated documentation comment in .proto file."""
 
     @staticmethod
@@ -82,9 +82,9 @@ class OlympicsLocationAgent(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            "/olympicslocationagent.v1.OlympicsLocationAgent/Ask",
-            olympicslocationagent__pb2.Olympics.SerializeToString,
-            olympicslocationagent__pb2.CityLocation.FromString,
+            "/olympicsagent.v1.OlympicsAgent/Ask",
+            olympicsagent__pb2.OlympicsQuery.SerializeToString,
+            olympicsagent__pb2.CityLocation.FromString,
             options,
             channel_credentials,
             insecure,
@@ -111,9 +111,9 @@ class OlympicsLocationAgent(object):
         return grpc.experimental.unary_stream(
             request,
             target,
-            "/olympicslocationagent.v1.OlympicsLocationAgent/AskStream",
-            olympicslocationagent__pb2.Duration.SerializeToString,
-            olympicslocationagent__pb2.Result.FromString,
+            "/olympicsagent.v1.OlympicsAgent/AskStream",
+            olympicsagent__pb2.OlympicsDurationQuery.SerializeToString,
+            olympicsagent__pb2.StreamingResult.FromString,
             options,
             channel_credentials,
             insecure,
