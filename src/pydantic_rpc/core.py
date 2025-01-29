@@ -602,6 +602,10 @@ def comment_out(docstr: str) -> tuple[str, ...]:
     """Convert docstrings into commented-out lines in a .proto file."""
     if docstr is None:
         return tuple()
+
+    if docstr.startswith("Usage docs: https://docs.pydantic.dev/2.10/concepts/models/"):
+        return tuple()
+
     return tuple(f"//" if line == "" else f"// {line}" for line in docstr.split("\n"))
 
 
