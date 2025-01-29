@@ -431,7 +431,7 @@ Using this generated proto file and tools as `protoc`, `buf` and `BSR`, you coul
 | dict[K, V]                     | map<K, V>                 |
 | datetime.datetime              | google.protobuf.Timestamp |
 | datetime.timedelta             | google.protobuf.Duration  |
-| typping.Union[A, B]            | oneof A, B                |
+| typing.Union[A, B]             | oneof A, B                |
 | subclass of enum.Enum          | enum                      |
 | subclass of pydantic.BaseModel | message                   |
 
