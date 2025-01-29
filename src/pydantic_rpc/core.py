@@ -107,24 +107,26 @@ def generate_converter(annotation: Type) -> Callable:
 
         return dur_converter
 
-    # For list types
-    if get_origin(annotation) is list:
-        item_converter = generate_converter(get_args(annotation)[0])
+    origin = get_origin(annotation)
+    if origin is not None:
+        # For seq types
+        if origin in (list, tuple):
+            item_converter = generate_converter(get_args(annotation)[0])
 
-        def list_converter(value):
-            return [item_converter(v) for v in value]
+            def seq_converter(value):
+                return [item_converter(v) for v in value]
 
-        return list_converter
+            return seq_converter
 
-    # For dict types
-    if get_origin(annotation) is dict:
-        key_converter = generate_converter(get_args(annotation)[0])
-        value_converter = generate_converter(get_args(annotation)[1])
+        # For dict types
+        if origin is dict:
+            key_converter = generate_converter(get_args(annotation)[0])
+            value_converter = generate_converter(get_args(annotation)[1])
 
-        def dict_converter(value):
-            return {key_converter(k): value_converter(v) for k, v in value.items()}
+            def dict_converter(value):
+                return {key_converter(k): value_converter(v) for k, v in value.items()}
 
-        return dict_converter
+            return dict_converter
 
     # For Message classes
     if inspect.isclass(annotation) and issubclass(annotation, Message):
@@ -464,13 +466,14 @@ def python_value_to_proto(field_type: Type, value, pb2_module):
     if inspect.isclass(field_type) and issubclass(field_type, enum.Enum):
         return value.value  # proto3 enum is an int
 
-    # If list
-    if get_origin(field_type) is list:
+    origin = get_origin(field_type)
+    # If seq
+    if origin in (list, tuple):
         inner_type = get_args(field_type)[0]  # type: ignore
         return [python_value_to_proto(inner_type, v, pb2_module) for v in value]
 
     # If dict
-    if get_origin(field_type) is dict:
+    if origin is dict:
         key_type, val_type = get_args(field_type)  # type: ignore
         return {
             python_value_to_proto(key_type, k, pb2_module): python_value_to_proto(
@@ -576,7 +579,7 @@ def protobuf_type_mapping(python_type: Type) -> str | type | None:
         return None  # Handled separately as oneof
 
     if hasattr(python_type, "__origin__"):
-        if python_type.__origin__ is list:
+        if python_type.__origin__ in (list, tuple):
             inner_type = python_type.__args__[0]
             inner_proto_type = protobuf_type_mapping(inner_type)
             if inner_proto_type:
