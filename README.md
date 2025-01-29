@@ -80,6 +80,7 @@ app.mount(OlympicsLocationAgent())
 - 🔄 **Automatic Protobuf Generation:** Automatically creates protobuf files matching the method signatures of your Python objects.
 - ⚙️ **Dynamic Code Generation:** Generates server and client stubs using `grpcio-tools`.
 - ✅ **Pydantic Integration:** Uses `pydantic` for robust type validation and serialization.
+- 📄 **Pprotobuf File Export:** Exports the generated protobuf files for use in other languages.
 - **For gRPC:**
   - 💚 **Health Checking:** Built-in support for gRPC health checks using `grpc_health.v1`.
   - 🔎 **Server Reflection:** Built-in support for gRPC server reflection.
@@ -419,18 +420,27 @@ Using this generated proto file and tools as `protoc`, `buf` and `BSR`, you coul
 
 ## 📖 Data Type Mapping
 
-| Python Type        | Protobuf Type   |
-|--------------------|-----------------|
-| str                | string          |
-| bool               | bool            |
-| int                | int32, int64    |
-| float              | float, double   |
-| list[T], tuple[T]  | repeated T      |
-| dict[K, V]         | map<K, V>       |
+| Python Type                    | Protobuf Type             |
+|--------------------------------|---------------------------|
+| str                            | string                    |
+| bytes                          | bytes                     |
+| bool                           | bool                      |
+| int                            | int32                     |
+| float                          | float, double             |
+| list[T], tuple[T]              | repeated T                |
+| dict[K, V]                     | map<K, V>                 |
+| datetime.datetime              | google.protobuf.Timestamp |
+| datetime.timedelta             | google.protobuf.Duration  |
+| typping.Union[A, B]            | oneof A, B                |
+| subclass of enum.Enum          | enum                      |
+| subclass of pydantic.BaseModel | message                   |
 
 
 ## TODO
 - [ ] Streaming Support
+  - [x] unary-stream
+  - [ ] stream-unary
+  - [ ] stream-stream
 - [ ] Betterproto Support
 - [ ] Sonora-connect Support
 - [ ] Custom Health Check Support
