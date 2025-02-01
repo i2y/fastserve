@@ -1,6 +1,7 @@
 from pydantic_rpc import Server, Message
 
-import greeter_pb2_grpc, greeter_pb2
+import greeter_pb2_grpc
+import greeter_pb2
 
 
 class HelloRequest(Message):

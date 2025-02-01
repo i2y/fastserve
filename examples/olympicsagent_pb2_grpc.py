@@ -2,8 +2,31 @@
 """Client and server classes corresponding to protobuf-defined services."""
 
 import grpc
+import warnings
 
 import olympicsagent_pb2 as olympicsagent__pb2
+
+GRPC_GENERATED_VERSION = "1.70.0"
+GRPC_VERSION = grpc.__version__
+_version_not_supported = False
+
+try:
+    from grpc._utilities import first_version_is_lower
+
+    _version_not_supported = first_version_is_lower(
+        GRPC_VERSION, GRPC_GENERATED_VERSION
+    )
+except ImportError:
+    _version_not_supported = True
+
+if _version_not_supported:
+    raise RuntimeError(
+        f"The grpc package installed is at version {GRPC_VERSION},"
+        + f" but the generated code in olympicsagent_pb2_grpc.py depends on"
+        + f" grpcio>={GRPC_GENERATED_VERSION}."
+        + f" Please upgrade your grpc module to grpcio>={GRPC_GENERATED_VERSION}"
+        + f" or downgrade your generated code using grpcio-tools<={GRPC_VERSION}."
+    )
 
 
 class OlympicsAgentStub(object):
@@ -19,11 +42,13 @@ class OlympicsAgentStub(object):
             "/olympicsagent.v1.OlympicsAgent/Ask",
             request_serializer=olympicsagent__pb2.OlympicsQuery.SerializeToString,
             response_deserializer=olympicsagent__pb2.CityLocation.FromString,
+            _registered_method=True,
         )
         self.AskStream = channel.unary_stream(
             "/olympicsagent.v1.OlympicsAgent/AskStream",
             request_serializer=olympicsagent__pb2.OlympicsDurationQuery.SerializeToString,
             response_deserializer=olympicsagent__pb2.StreamingResult.FromString,
+            _registered_method=True,
         )
 
 
@@ -60,6 +85,9 @@ def add_OlympicsAgentServicer_to_server(servicer, server):
         "olympicsagent.v1.OlympicsAgent", rpc_method_handlers
     )
     server.add_generic_rpc_handlers((generic_handler,))
+    server.add_registered_method_handlers(
+        "olympicsagent.v1.OlympicsAgent", rpc_method_handlers
+    )
 
 
 # This class is part of an EXPERIMENTAL API.
@@ -93,6 +121,7 @@ class OlympicsAgent(object):
             wait_for_ready,
             timeout,
             metadata,
+            _registered_method=True,
         )
 
     @staticmethod
@@ -122,4 +151,5 @@ class OlympicsAgent(object):
             wait_for_ready,
             timeout,
             metadata,
+            _registered_method=True,
         )

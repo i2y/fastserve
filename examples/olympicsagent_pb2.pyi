@@ -5,7 +5,7 @@ from typing import ClassVar as _ClassVar, Optional as _Optional
 DESCRIPTOR: _descriptor.FileDescriptor
 
 class CityLocation(_message.Message):
-    __slots__ = ["city", "country"]
+    __slots__ = ("city", "country")
     CITY_FIELD_NUMBER: _ClassVar[int]
     COUNTRY_FIELD_NUMBER: _ClassVar[int]
     city: str
@@ -15,19 +15,19 @@ class CityLocation(_message.Message):
     ) -> None: ...
 
 class OlympicsQuery(_message.Message):
-    __slots__ = ["year"]
+    __slots__ = ("year",)
     YEAR_FIELD_NUMBER: _ClassVar[int]
     year: int
     def __init__(self, year: _Optional[int] = ...) -> None: ...
 
 class StreamingResult(_message.Message):
-    __slots__ = ["answer"]
+    __slots__ = ("answer",)
     ANSWER_FIELD_NUMBER: _ClassVar[int]
     answer: str
     def __init__(self, answer: _Optional[str] = ...) -> None: ...
 
 class OlympicsDurationQuery(_message.Message):
-    __slots__ = ["start", "end"]
+    __slots__ = ("start", "end")
     START_FIELD_NUMBER: _ClassVar[int]
     END_FIELD_NUMBER: _ClassVar[int]
     start: int

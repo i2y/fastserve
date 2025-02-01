@@ -5,7 +5,7 @@ from typing import ClassVar as _ClassVar, Optional as _Optional
 DESCRIPTOR: _descriptor.FileDescriptor
 
 class CityLocation(_message.Message):
-    __slots__ = ["city", "country"]
+    __slots__ = ("city", "country")
     CITY_FIELD_NUMBER: _ClassVar[int]
     COUNTRY_FIELD_NUMBER: _ClassVar[int]
     city: str
@@ -15,7 +15,7 @@ class CityLocation(_message.Message):
     ) -> None: ...
 
 class Olympics(_message.Message):
-    __slots__ = ["year"]
+    __slots__ = ("year",)
     YEAR_FIELD_NUMBER: _ClassVar[int]
     year: int
     def __init__(self, year: _Optional[int] = ...) -> None: ...

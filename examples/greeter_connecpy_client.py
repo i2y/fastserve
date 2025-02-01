@@ -16,7 +16,8 @@
 from connecpy.context import ClientContext
 from connecpy.exceptions import ConnecpyServerException
 
-import greeter_connecpy, greeter_pb2
+import greeter_connecpy
+import greeter_pb2
 
 
 server_url = "http://localhost:3000"

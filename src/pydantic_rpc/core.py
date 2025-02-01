@@ -606,7 +606,7 @@ def comment_out(docstr: str) -> tuple[str, ...]:
     if docstr.startswith("Usage docs: https://docs.pydantic.dev/2.10/concepts/models/"):
         return tuple()
 
-    return tuple(f"//" if line == "" else f"// {line}" for line in docstr.split("\n"))
+    return tuple("//" if line == "" else f"// {line}" for line in docstr.split("\n"))
 
 
 def indent_lines(lines, indentation="    "):

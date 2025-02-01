@@ -2,10 +2,18 @@
 
 ## 📝 Prerequisites
 
-Ensure you have [Rye](https://rye-up.com/) installed on your system. If not, you can install it using the following command:
+Ensure you have [UV](https://docs.astral.sh/uv/) installed on your system. If not, you can install it using the following command:
+
+### Linux/macOS
 
 ```bash
-curl -sSL https://rye-up.com/install.sh | bash
+curl -LsSf https://astral.sh/uv/install.sh | sh
+```
+
+### Windows
+
+```powershell
+powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
 ```
 
 ## 🔧 Setup
@@ -20,7 +28,7 @@ curl -sSL https://rye-up.com/install.sh | bash
 2. **Install Dependencies with Rye:**
 
     ```bash
-    rye sync
+    uv sync
     ```
 
 ## 🖥️ gRPC Server Example
@@ -32,7 +40,7 @@ A simple gRPC server.
 **Usage:**
 
 ```bash
-rye run python greeting.py
+uv run greeting.py
 ```
 
 ### 🔗 Client (`greeter_client.py`)
@@ -42,7 +50,7 @@ A gRPC client to interact with the server.
 **Usage:**
 
 ```bash
-rye run python greeter_client.py
+uv run greeter_client.py
 ```
 
 ## ⚡ Asyncio gRPC Server Example
@@ -54,7 +62,7 @@ An asyncio gRPC server using `AsyncIOServer`.
 **Usage:**
 
 ```bash
-rye run python asyncio_greeting.py
+uv run asyncio_greeting.py
 ```
 
 ## 🌐 ASGI Integration (gRPC-Web)
@@ -66,7 +74,7 @@ Integrate **PydanticRPC** (gRPC-Web) with an ASGI-compatible framework.
 **Usage:**
 
 ```bash
-rye run hypercorn -bind :3000 greeting_asgi:app
+uv run hypercorn -bind :3000 greeting_asgi:app
 ```
 
 ### 🔗 Client (`greeter_sonora_client.py`)
@@ -75,7 +83,7 @@ A gRPC-Web client to interact with the server.
 **Usage:**
 
 ```bash
-rye run python greeter_sonora_client.py
+uv run greeter_sonora_client.py
 ```
 
 
@@ -88,7 +96,7 @@ Integrate **PydanticRPC** (gRPC-Web) with a WSGI-compatible framework.
 **Usage:**
 
 ```bash
-rye run python greeting_wsgi.py
+uv run greeting_wsgi.py
 ```
 
 ### 🔗 Client (`greeter_sonora_client.py`)
@@ -97,7 +105,7 @@ A gRPC-Web client to interact with the server.
 **Usage:**
 
 ```bash
-rye run python greeter_sonora_client.py
+uv run greeter_sonora_client.py
 ```
 
 
@@ -109,7 +117,7 @@ A simple gRPC server with custom interceptor and running multiple services.
 **Usage:**
 
 ```bash
-rye run python foobar.py
+uv run foobar.py
 ```
 
 ### 🔗 Client (`foobar_client.py`)
@@ -118,7 +126,7 @@ A gRPC client to interact with the server.
 **Usage:**
 
 ```bash
-rye run python foobar_client.py
+uv run foobar_client.py
 ```
 
 ## 🤝 Connecpy (Connect-RPC) Example
@@ -130,7 +138,7 @@ A Connect-RPC ASGI application using PydanticRPC + connecpy.
 **Usage:**
 
 ```bash
-rye run hypercorn --bind :3000 greeting_connecpy:app
+uv run hypercorn --bind :3000 greeting_connecpy:app
 ```
 
 ### 🔗 Client (`greeter_client_connecpy.py`)
@@ -140,5 +148,5 @@ A Connect-RPC client to interact with the server.
 **Usage:**
 
 ```bash
-rye run python greeter_client_connecpy.py
+uv run greeter_client_connecpy.py
 ```

@@ -215,7 +215,7 @@ app.mount(Greeter())
 PydanticRPC also partially supports Connect-RPC via connecpy. Check out “greeting_connecpy.py” for an example:
 
 ```bash
-rye run python greeting_connecpy.py
+uv run greeting_connecpy.py
 ```
 
 This will launch a Connecpy-based ASGI application that uses the same Pydantic models to serve Connect-RPC requests.

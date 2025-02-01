@@ -27,6 +27,13 @@ class Olympics(Message):
 
 class OlympicsLocationAgent:
     def __init__(self):
+        # # if pydantic_ai >= 0.0.21
+        # ollama_model = OpenAIModel(
+        #     model_name="llama3.2",
+        #     base_url="http://localhost:11434/v1",
+        #     api_key="",
+        # )
+        # self._agent = Agent(ollama_model, result_type=CityLocation)
         self._agent = Agent("ollama:llama3.2", result_type=CityLocation)
 
     async def ask(self, req: Olympics) -> CityLocation:

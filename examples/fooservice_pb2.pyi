@@ -6,9 +6,9 @@ from typing import ClassVar as _ClassVar, Mapping as _Mapping, Optional as _Opti
 DESCRIPTOR: _descriptor.FileDescriptor
 
 class FooResponse(_message.Message):
-    __slots__ = ["name", "age", "d"]
+    __slots__ = ("name", "age", "d")
     class DEntry(_message.Message):
-        __slots__ = ["key", "value"]
+        __slots__ = ("key", "value")
         KEY_FIELD_NUMBER: _ClassVar[int]
         VALUE_FIELD_NUMBER: _ClassVar[int]
         key: str
@@ -31,9 +31,9 @@ class FooResponse(_message.Message):
     ) -> None: ...
 
 class FooRequest(_message.Message):
-    __slots__ = ["name", "age", "d"]
+    __slots__ = ("name", "age", "d")
     class DEntry(_message.Message):
-        __slots__ = ["key", "value"]
+        __slots__ = ("key", "value")
         KEY_FIELD_NUMBER: _ClassVar[int]
         VALUE_FIELD_NUMBER: _ClassVar[int]
         key: str
