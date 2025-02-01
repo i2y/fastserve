@@ -1,3 +1,4 @@
+import annotated_types
 import asyncio
 import enum
 import importlib.util
@@ -17,7 +18,6 @@ from typing import (
     get_origin,
     Union,
     TypeAlias,
-    # AsyncIterator,  # Add if not already present
 )
 from collections.abc import AsyncIterator
 
@@ -600,7 +600,7 @@ def protobuf_type_mapping(python_type: Type) -> str | type | None:
 
 def comment_out(docstr: str) -> tuple[str, ...]:
     """Convert docstrings into commented-out lines in a .proto file."""
-    if docstr is None:
+    if not docstr:
         return tuple()
 
     if docstr.startswith("Usage docs: https://docs.pydantic.dev/2.10/concepts/models/"):
@@ -704,6 +704,41 @@ def generate_message_definition(
                 proto_typename = field_type.__name__
                 if field_type not in done_messages:
                     refs.append(field_type)
+
+            if field_info.description:
+                fields.append("// " + field_info.description)
+            if field_info.metadata:
+                fields.append("// Constraint:")
+                for metadata_item in field_info.metadata:
+                    match type(metadata_item):
+                        case annotated_types.Ge:
+                            fields.append(
+                                "//   greater than or equal to " + str(metadata_item.ge)
+                            )
+                        case annotated_types.Le:
+                            fields.append(
+                                "//   less than or equal to " + str(metadata_item.le)
+                            )
+                        case annotated_types.Gt:
+                            fields.append("//   greater than " + str(metadata_item.gt))
+                        case annotated_types.Lt:
+                            fields.append("//   less than " + str(metadata_item.lt))
+                        case annotated_types.MultipleOf:
+                            fields.append(
+                                "//   multiple of " + str(metadata_item.multiple_of)
+                            )
+                        case annotated_types.Len:
+                            fields.append("//   length of " + str(metadata_item.len))
+                        case annotated_types.MinLen:
+                            fields.append(
+                                "//   minimum length of " + str(metadata_item.min_len)
+                            )
+                        case annotated_types.MaxLen:
+                            fields.append(
+                                "//   maximum length of " + str(metadata_item.max_len)
+                            )
+                        case _:
+                            fields.append("//   " + str(metadata_item))
 
             fields.append(f"{proto_typename} {field_name} = {index};")
             index += 1

@@ -248,57 +248,38 @@ Please see the sample code below:
 
 ```python
 import asyncio
-from typing import AsyncIterator
+from typing import Annotated, AsyncIterator
 
-from pydantic import field_validator
+from pydantic import Field
 from pydantic_ai import Agent
 from pydantic_rpc import AsyncIOServer, Message
 
 
 # `Message` is just a pydantic BaseModel alias
 class CityLocation(Message):
-    city: str
-    country: str
+    city: Annotated[str, Field(description="The city where the Olympics were held")]
+    country: Annotated[
+        str, Field(description="The country where the Olympics were held")
+    ]
 
 
 class OlympicsQuery(Message):
-    year: int
+    year: Annotated[int, Field(description="The year of the Olympics", ge=1896)]
 
     def prompt(self):
         return f"Where were the Olympics held in {self.year}?"
 
-    @field_validator("year")
-    def validate_year(cls, value):
-        if value < 1896:
-            raise ValueError("The first modern Olympics was held in 1896.")
-
-        return value
-
 
 class OlympicsDurationQuery(Message):
-    start: int
-    end: int
+    start: Annotated[int, Field(description="The start year of the Olympics", ge=1896)]
+    end: Annotated[int, Field(description="The end year of the Olympics", ge=1896)]
 
     def prompt(self):
         return f"From {self.start} to {self.end}, how many Olympics were held? Please provide the list of countries and cities."
 
-    @field_validator("start")
-    def validate_start(cls, value):
-        if value < 1896:
-            raise ValueError("The first modern Olympics was held in 1896.")
-
-        return value
-
-    @field_validator("end")
-    def validate_end(cls, value):
-        if value < 1896:
-            raise ValueError("The first modern Olympics was held in 1896.")
-
-        return value
-
 
 class StreamingResult(Message):
-    answer: str
+    answer: Annotated[str, Field(description="The answer to the query")]
 
 
 class OlympicsAgent:
