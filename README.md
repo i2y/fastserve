@@ -389,15 +389,16 @@ if __name__ == "__main__":
 
 TODO
 
-### 🗄️ Protobuf file generation
+### 🗄️ Protobuf file and code (Python files) generation
 
-You can generate protobuf files for a given module and a specified class using `core.py`:
+Youcan genereate protobuf files and code for a given module and a specified class using `pydantic-rpc` CLI command:
 
 ```bash
-python core.py a_module.py aClass
+pydantic-rpc a_module.py aClassName
 ```
 
 Using this generated proto file and tools as `protoc`, `buf` and `BSR`, you could generate code for any desired language other than Python.
+
 
 ## 📖 Data Type Mapping
 

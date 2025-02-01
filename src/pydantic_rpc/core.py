@@ -1330,14 +1330,19 @@ class ConnecpyASGIApp:
         await self._app(scope, receive, send)
 
 
-if __name__ == "__main__":
-    """
-    If executed as a script, generate the .proto files for a given class.
-    Usage: python core.py some_module.py SomeServiceClass
-    """
-    py_file_name = sys.argv[1]
-    class_name = sys.argv[2]
-    module_name = os.path.splitext(basename(py_file_name))[0]
+def main():
+    import argparse
+
+    parser = argparse.ArgumentParser(description="Generate and compile proto files.")
+    parser.add_argument("py_file", type=str, help="The Python file containing the service class.")
+    parser.add_argument("class_name", type=str, help="The name of the service class.")
+    args = parser.parse_args()
+
+    module_name = os.path.splitext(basename(args.py_file))[0]
     module = importlib.import_module(module_name)
-    klass = getattr(module, class_name)
+    klass = getattr(module, args.class_name)
     generate_and_compile_proto(klass())
+
+
+if __name__ == "__main__":
+    main()
