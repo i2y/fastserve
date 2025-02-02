@@ -243,7 +243,9 @@ When this variable is set to "true", PydanticRPC will load existing pre-generate
 ## 💎 Advanced Features
 
 ### 🌊 Response Streaming
-PydanticRPC supports streaming for responses in asynchronous gRPC and gRPC-Web services only.
+PydanticRPC supports streaming responses only for asynchronous gRPC and gRPC-Web services.
+If a service class method’s return type is `typing.AsyncIterator[T]`, the method is considered a streaming method.
+
 
 Please see the sample code below:
 
@@ -304,6 +306,9 @@ if __name__ == "__main__":
     loop = asyncio.get_event_loop()
     loop.run_until_complete(s.run(OlympicsAgent()))
 ```
+
+In the example above, the `ask_stream` method returns an `AsyncIterator[StreamingResult]` object, which is considered a streaming method. The `StreamingResult` class is a Pydantic model that defines the response type of the streaming method. You can use any Pydantic model as the response type.
+
 
 ### 🔗 Multiple Services with Custom Interceptors
 
