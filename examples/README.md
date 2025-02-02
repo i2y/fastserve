@@ -2,7 +2,7 @@
 
 ## 📝 Prerequisites
 
-Ensure you have [UV](https://docs.astral.sh/uv/) installed on your system. If not, you can install it using the following command:
+Ensure you have [uv](https://docs.astral.sh/uv/) installed on your system. If not, you can install it using the following command:
 
 ### Linux/macOS
 
