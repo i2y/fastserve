@@ -89,6 +89,7 @@ app.mount(OlympicsLocationAgent())
   - 🌐 **WSGI/ASGI Support:** Create gRPC-Web services that can run as WSGI or ASGI applications powered by `Sonora`.
 - **For Connect-RPC:**
   - 🌐 **Connecpy Support:** Partially supports Connect-RPC via `Connecpy`.
+- 🛠️ **Pre-generated Protobuf Files and Code:** Pre-generate proto files and corresponding code via the CLI. By setting the environment variable (PYDANTIC_RPC_SKIP_GENERATION), you can skip runtime generation.
 
 ## 📦 Installation
 
@@ -389,9 +390,9 @@ if __name__ == "__main__":
 
 TODO
 
-### 🗄️ Protobuf file and code (Python files) generation
+### 🗄️ Protobuf file and code (Python files) generation using CLI
 
-Youcan genereate protobuf files and code for a given module and a specified class using `pydantic-rpc` CLI command:
+You can genereate protobuf files and code for a given module and a specified class using `pydantic-rpc` CLI command:
 
 ```bash
 pydantic-rpc a_module.py aClassName
