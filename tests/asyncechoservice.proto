@@ -1,0 +1,33 @@
+syntax = "proto3";
+
+package asyncecho.v1;
+
+// Echo service.
+// A simple service that echoes messages back in uppercase.
+service AsyncEchoService {
+    // Echo the message back in uppercase.
+    //
+    // Args:
+    //     request (EchoRequest): The request message.
+    //
+    // Returns:
+    //     EchoResponse: The response message.
+    rpc Echo (EchoRequest) returns (EchoResponse);
+}
+
+// Echo response message.
+//
+// Attributes:
+//     text (str): The echoed text.
+message EchoResponse {
+    string text = 1;
+}
+
+// Echo request message.
+//
+// Attributes:
+//     text (str): The text to echo.
+message EchoRequest {
+    string text = 1;
+}
+

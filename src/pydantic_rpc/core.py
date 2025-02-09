@@ -31,6 +31,7 @@ from sonora.wsgi import grpcWSGI
 from sonora.asgi import grpcASGI
 from connecpy.asgi import ConnecpyASGIApp as ConnecpyASGI
 from connecpy.errors import Errors
+from connecpy.wsgi import ConnecpyWSGIApp as ConnecpyWSGI
 
 # Protobuf Python modules for Timestamp, Duration (requires protobuf / grpcio)
 from google.protobuf import timestamp_pb2, duration_pb2
@@ -350,6 +351,69 @@ def connect_obj_with_stub_async(pb2_grpc_module, pb2_module, obj: object) -> typ
         if method.__name__.startswith("_"):
             continue
 
+        a_method = implement_stub_method(method)
+        setattr(ConcreteServiceClass, method_name, a_method)
+
+    return ConcreteServiceClass
+
+
+def connect_obj_with_stub_connecpy(connecpy_module, pb2_module, obj: object) -> type:
+    """
+    Connect a Python service object to a Connecpy stub.
+    """
+    service_class = obj.__class__
+    stub_class_name = service_class.__name__
+    stub_class = getattr(connecpy_module, stub_class_name)
+
+    class ConcreteServiceClass(stub_class):
+        pass
+
+    def implement_stub_method(method):
+        sig = inspect.signature(method)
+        arg_type = get_request_arg_type(sig)
+        converter = generate_message_converter(arg_type)
+        response_type = sig.return_annotation
+        size_of_parameters = len(sig.parameters)
+
+        match size_of_parameters:
+            case 1:
+
+                def stub_method1(self, request, context, method=method):
+                    try:
+                        arg = converter(request)
+                        resp_obj = method(arg)
+                        return convert_python_message_to_proto(
+                            resp_obj, response_type, pb2_module
+                        )
+                    except ValidationError as e:
+                        return context.abort(Errors.InvalidArgument, str(e))
+                    except Exception as e:
+                        return context.abort(Errors.Internal, str(e))
+
+                return stub_method1
+
+            case 2:
+
+                def stub_method2(self, request, context, method=method):
+                    try:
+                        arg = converter(request)
+                        resp_obj = method(arg, context)
+                        return convert_python_message_to_proto(
+                            resp_obj, response_type, pb2_module
+                        )
+                    except ValidationError as e:
+                        return context.abort(Errors.InvalidArgument, str(e))
+                    except Exception as e:
+                        return context.abort(Errors.Internal, str(e))
+
+                return stub_method2
+
+            case _:
+                raise Exception("Method must have exactly one or two parameters")
+
+    for method_name, method in get_rpc_methods(obj):
+        if method.__name__.startswith("_"):
+            continue
         a_method = implement_stub_method(method)
         setattr(ConcreteServiceClass, method_name, a_method)
 
@@ -1330,11 +1394,54 @@ class ConnecpyASGIApp:
         await self._app(scope, receive, send)
 
 
+class ConnecpyWSGIApp:
+    """
+    A WSGI-compatible application that can serve Connect-RPC via Connecpy's ConnecpyWSGIApp.
+    """
+
+    def __init__(self):
+        self._app = ConnecpyWSGI()
+        self._service_names = []
+        self._package_name = ""
+
+    def mount(self, obj: object, package_name: str = ""):
+        """Generate and compile proto files, then mount the async service implementation."""
+        connecpy_module, pb2_module = generate_and_compile_proto_using_connecpy(
+            obj, package_name
+        )
+        self.mount_using_pb2_modules(connecpy_module, pb2_module, obj)
+
+    def mount_using_pb2_modules(self, connecpy_module, pb2_module, obj: object):
+        """Connect the compiled connecpy and pb2 modules with the async service implementation."""
+        concreteServiceClass = connect_obj_with_stub_connecpy(
+            connecpy_module, pb2_module, obj
+        )
+        service_name = obj.__class__.__name__
+        service_impl = concreteServiceClass()
+        connecpy_server = get_connecpy_server_class(connecpy_module, service_name)
+        self._app.add_service(connecpy_server(service=service_impl))
+        full_service_name = pb2_module.DESCRIPTOR.services_by_name[
+            service_name
+        ].full_name
+        self._service_names.append(full_service_name)
+
+    def mount_objs(self, *objs):
+        """Mount multiple service objects into this WSGI app."""
+        for obj in objs:
+            self.mount(obj, self._package_name)
+
+    def __call__(self, environ, start_response):
+        """WSGI entry point."""
+        return self._app(environ, start_response)
+
+
 def main():
     import argparse
 
     parser = argparse.ArgumentParser(description="Generate and compile proto files.")
-    parser.add_argument("py_file", type=str, help="The Python file containing the service class.")
+    parser.add_argument(
+        "py_file", type=str, help="The Python file containing the service class."
+    )
     parser.add_argument("class_name", type=str, help="The name of the service class.")
     args = parser.parse_args()
 

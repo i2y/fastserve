@@ -43,6 +43,30 @@ class GreeterServer(ConnecpyServer):
         return "greeter.v1.Greeter"
 
 
+class GreeterSync(Protocol):
+    def SayHello(
+        self, req: _pb2.HelloRequest, ctx: ServiceContext
+    ) -> _pb2.HelloReply: ...
+
+
+class GreeterServerSync(ConnecpyServer):
+    def __init__(self, *, service: GreeterSync, server_path_prefix=""):
+        super().__init__()
+        self._prefix = f"{server_path_prefix}/greeter.v1.Greeter"
+        self._endpoints = {
+            "SayHello": Endpoint[_pb2.HelloRequest, _pb2.HelloReply](
+                service_name="Greeter",
+                name="SayHello",
+                function=getattr(service, "SayHello"),
+                input=_pb2.HelloRequest,
+                output=_pb2.HelloReply,
+            ),
+        }
+
+    def serviceName(self):
+        return "greeter.v1.Greeter"
+
+
 class GreeterClient(ConnecpyClient):
     def SayHello(
         self,
