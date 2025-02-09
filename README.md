@@ -8,7 +8,9 @@ Below is an example of a simple gRPC service that exposes a [PydanticAI](https:/
 ```python
 import asyncio
 
+from openai import AsyncOpenAI
 from pydantic_ai import Agent
+from pydantic_ai.models.openai import OpenAIModel
 from pydantic_rpc import AsyncIOServer, Message
 
 
@@ -27,7 +29,15 @@ class Olympics(Message):
 
 class OlympicsLocationAgent:
     def __init__(self):
-        self._agent = Agent("ollama:llama3.2", result_type=CityLocation)
+        client = AsyncOpenAI(
+            base_url="http://localhost:11434/v1",
+            api_key="ollama_api_key",
+        )
+        ollama_model = OpenAIModel(
+            model_name="llama3.2",
+            openai_client=client,
+        )
+        self._agent = Agent(ollama_model)
 
     async def ask(self, req: Olympics) -> CityLocation:
         result = await self._agent.run(req.prompt())
@@ -45,7 +55,9 @@ And here is an example of a simple Connect RPC service that exposes the same age
 ```python
 import asyncio
 
+from openai import AsyncOpenAI
 from pydantic_ai import Agent
+from pydantic_ai.models.openai import OpenAIModel
 from pydantic_rpc import ConnecpyASGIApp, Message
 
 
@@ -63,7 +75,15 @@ class Olympics(Message):
 
 class OlympicsLocationAgent:
     def __init__(self):
-        self._agent = Agent("ollama:llama3.2", result_type=CityLocation)
+        client = AsyncOpenAI(
+            base_url="http://localhost:11434/v1",
+            api_key="ollama_api_key",
+        )
+        ollama_model = OpenAIModel(
+            model_name="llama3.2",
+            openai_client=client,
+        )
+        self._agent = Agent(ollama_model, result_type=CityLocation)
 
     async def ask(self, req: Olympics) -> CityLocation:
         result = await self._agent.run(req.prompt())
@@ -253,8 +273,10 @@ Please see the sample code below:
 import asyncio
 from typing import Annotated, AsyncIterator
 
+from openai import AsyncOpenAI
 from pydantic import Field
 from pydantic_ai import Agent
+from pydantic_ai.models.openai import OpenAIModel
 from pydantic_rpc import AsyncIOServer, Message
 
 
@@ -287,7 +309,15 @@ class StreamingResult(Message):
 
 class OlympicsAgent:
     def __init__(self):
-        self._agent = Agent("ollama:llama3.2")
+        client = AsyncOpenAI(
+            base_url='http://localhost:11434/v1',
+            api_key='ollama_api_key',
+        )
+        ollama_model = OpenAIModel(
+            model_name='llama3.2',
+            openai_client=client,
+        )
+        self._agent = Agent(ollama_model)
 
     async def ask(self, req: OlympicsQuery) -> CityLocation:
         result = await self._agent.run(req.prompt(), result_type=CityLocation)
@@ -309,6 +339,299 @@ if __name__ == "__main__":
 
 In the example above, the `ask_stream` method returns an `AsyncIterator[StreamingResult]` object, which is considered a streaming method. The `StreamingResult` class is a Pydantic model that defines the response type of the streaming method. You can use any Pydantic model as the response type.
 
+Now, you can call the `ask_stream` method of the server described above using your preferred gRPC client tool. The example below uses `buf curl`.
+
+
+```console
+% buf curl --data '{"start": 1980, "end": 2024}' -v http://localhost:50051/olympicsagent.v1.OlympicsAgent/AskStream --protocol grpc --http2-prior-knowledge 
+
+buf: * Using server reflection to resolve "olympicsagent.v1.OlympicsAgent"
+buf: * Dialing (tcp) localhost:50051...
+buf: * Connected to [::1]:50051
+buf: > (#1) POST /grpc.reflection.v1.ServerReflection/ServerReflectionInfo
+buf: > (#1) Accept-Encoding: identity
+buf: > (#1) Content-Type: application/grpc+proto
+buf: > (#1) Grpc-Accept-Encoding: gzip
+buf: > (#1) Grpc-Timeout: 119997m
+buf: > (#1) Te: trailers
+buf: > (#1) User-Agent: grpc-go-connect/1.12.0 (go1.21.4) buf/1.28.1
+buf: > (#1)
+buf: } (#1) [5 bytes data]
+buf: } (#1) [32 bytes data]
+buf: < (#1) HTTP/2.0 200 OK
+buf: < (#1) Content-Type: application/grpc
+buf: < (#1) Grpc-Message: Method not found!
+buf: < (#1) Grpc-Status: 12
+buf: < (#1)
+buf: * (#1) Call complete
+buf: > (#2) POST /grpc.reflection.v1alpha.ServerReflection/ServerReflectionInfo
+buf: > (#2) Accept-Encoding: identity
+buf: > (#2) Content-Type: application/grpc+proto
+buf: > (#2) Grpc-Accept-Encoding: gzip
+buf: > (#2) Grpc-Timeout: 119967m
+buf: > (#2) Te: trailers
+buf: > (#2) User-Agent: grpc-go-connect/1.12.0 (go1.21.4) buf/1.28.1
+buf: > (#2)
+buf: } (#2) [5 bytes data]
+buf: } (#2) [32 bytes data]
+buf: < (#2) HTTP/2.0 200 OK
+buf: < (#2) Content-Type: application/grpc
+buf: < (#2) Grpc-Accept-Encoding: identity, deflate, gzip
+buf: < (#2)
+buf: { (#2) [5 bytes data]
+buf: { (#2) [434 bytes data]
+buf: * Server reflection has resolved file "olympicsagent.proto"
+buf: * Invoking RPC olympicsagent.v1.OlympicsAgent.AskStream
+buf: > (#3) POST /olympicsagent.v1.OlympicsAgent/AskStream
+buf: > (#3) Accept-Encoding: identity
+buf: > (#3) Content-Type: application/grpc+proto
+buf: > (#3) Grpc-Accept-Encoding: gzip
+buf: > (#3) Grpc-Timeout: 119947m
+buf: > (#3) Te: trailers
+buf: > (#3) User-Agent: grpc-go-connect/1.12.0 (go1.21.4) buf/1.28.1
+buf: > (#3)
+buf: } (#3) [5 bytes data]
+buf: } (#3) [6 bytes data]
+buf: * (#3) Finished upload
+buf: < (#3) HTTP/2.0 200 OK
+buf: < (#3) Content-Type: application/grpc
+buf: < (#3) Grpc-Accept-Encoding: identity, deflate, gzip
+buf: < (#3)
+buf: { (#3) [5 bytes data]
+buf: { (#3) [25 bytes data]
+{
+ "answer": "Here's a list of Summer"
+}
+buf: { (#3) [5 bytes data]
+buf: { (#3) [31 bytes data]
+{
+  "answer": " and Winter Olympics from 198"
+}
+buf: { (#3) [5 bytes data]
+buf: { (#3) [29 bytes data]
+{
+  "answer": "0 to 2024:\n\nSummer Olympics"
+}
+buf: { (#3) [5 bytes data]
+buf: { (#3) [20 bytes data]
+{
+  "answer": ":\n1. 1980 - Moscow"
+}
+buf: { (#3) [5 bytes data]
+buf: { (#3) [20 bytes data]
+{
+  "answer": ", Soviet Union\n2. "
+}
+buf: { (#3) [5 bytes data]
+buf: { (#3) [32 bytes data]
+{
+  "answer": "1984 - Los Angeles, California"
+}
+buf: { (#3) [5 bytes data]
+buf: { (#3) [15 bytes data]
+{
+  "answer": ", USA\n3. 1988"
+}
+buf: { (#3) [5 bytes data]
+buf: { (#3) [26 bytes data]
+{
+  "answer": " - Seoul, South Korea\n4."
+}
+buf: { (#3) [5 bytes data]
+buf: { (#3) [27 bytes data]
+{
+  "answer": " 1992 - Barcelona, Spain\n"
+}
+buf: { (#3) [5 bytes data]
+buf: { (#3) [20 bytes data]
+{
+  "answer": "5. 1996 - Atlanta,"
+}
+buf: { (#3) [5 bytes data]
+buf: { (#3) [22 bytes data]
+{
+  "answer": " Georgia, USA\n6. 200"
+}
+buf: { (#3) [5 bytes data]
+buf: { (#3) [26 bytes data]
+{
+  "answer": "0 - Sydney, Australia\n7."
+}
+buf: { (#3) [5 bytes data]
+buf: { (#3) [25 bytes data]
+{
+  "answer": " 2004 - Athens, Greece\n"
+}
+buf: { (#3) [5 bytes data]
+buf: { (#3) [20 bytes data]
+{
+  "answer": "8. 2008 - Beijing,"
+}
+buf: { (#3) [5 bytes data]
+buf: { (#3) [18 bytes data]
+{
+  "answer": " China\n9. 2012 -"
+}
+buf: { (#3) [5 bytes data]
+buf: { (#3) [29 bytes data]
+{
+  "answer": " London, United Kingdom\n10."
+}
+buf: { (#3) [5 bytes data]
+buf: { (#3) [24 bytes data]
+{
+  "answer": " 2016 - Rio de Janeiro"
+}
+buf: { (#3) [5 bytes data]
+buf: { (#3) [18 bytes data]
+{
+  "answer": ", Brazil\n11. 202"
+}
+buf: { (#3) [5 bytes data]
+buf: { (#3) [24 bytes data]
+{
+  "answer": "0 - Tokyo, Japan (held"
+}
+buf: { (#3) [5 bytes data]
+buf: { (#3) [21 bytes data]
+{
+  "answer": " in 2021 due to the"
+}
+buf: { (#3) [5 bytes data]
+buf: { (#3) [26 bytes data]
+{
+  "answer": " COVID-19 pandemic)\n12. "
+}
+buf: { (#3) [5 bytes data]
+buf: { (#3) [28 bytes data]
+{
+  "answer": "2024 - Paris, France\n\nNote"
+}
+buf: { (#3) [5 bytes data]
+buf: { (#3) [41 bytes data]
+{
+  "answer": ": The Olympics were held without a host"
+}
+buf: { (#3) [5 bytes data]
+buf: { (#3) [26 bytes data]
+{
+  "answer": " city for one year (2022"
+}
+buf: { (#3) [5 bytes data]
+buf: { (#3) [42 bytes data]
+{
+  "answer": ", due to the Russian invasion of Ukraine"
+}
+buf: { (#3) [5 bytes data]
+buf: { (#3) [29 bytes data]
+{
+  "answer": ").\n\nWinter Olympics:\n1. 198"
+}
+buf: { (#3) [5 bytes data]
+buf: { (#3) [27 bytes data]
+{
+  "answer": "0 - Lake Placid, New York"
+}
+buf: { (#3) [5 bytes data]
+buf: { (#3) [15 bytes data]
+{
+  "answer": ", USA\n2. 1984"
+}
+buf: { (#3) [5 bytes data]
+buf: { (#3) [27 bytes data]
+{
+  "answer": " - Sarajevo, Yugoslavia ("
+}
+buf: { (#3) [5 bytes data]
+buf: { (#3) [30 bytes data]
+{
+  "answer": "now Bosnia and Herzegovina)\n"
+}
+buf: { (#3) [5 bytes data]
+buf: { (#3) [20 bytes data]
+{
+  "answer": "3. 1988 - Calgary,"
+}
+buf: { (#3) [5 bytes data]
+buf: { (#3) [25 bytes data]
+{
+  "answer": " Alberta, Canada\n4. 199"
+}
+buf: { (#3) [5 bytes data]
+buf: { (#3) [26 bytes data]
+{
+  "answer": "2 - Albertville, France\n"
+}
+buf: { (#3) [5 bytes data]
+buf: { (#3) [13 bytes data]
+{
+  "answer": "5. 1994 - L"
+}
+buf: { (#3) [5 bytes data]
+buf: { (#3) [24 bytes data]
+{
+  "answer": "illehammer, Norway\n6. "
+}
+buf: { (#3) [5 bytes data]
+buf: { (#3) [23 bytes data]
+{
+  "answer": "1998 - Nagano, Japan\n"
+}
+buf: { (#3) [5 bytes data]
+buf: { (#3) [16 bytes data]
+{
+  "answer": "7. 2002 - Salt"
+}
+buf: { (#3) [5 bytes data]
+buf: { (#3) [24 bytes data]
+{
+  "answer": " Lake City, Utah, USA\n"
+}
+buf: { (#3) [5 bytes data]
+buf: { (#3) [18 bytes data]
+{
+  "answer": "8. 2006 - Torino"
+}
+buf: { (#3) [5 bytes data]
+buf: { (#3) [17 bytes data]
+{
+  "answer": ", Italy\n9. 2010"
+}
+buf: { (#3) [5 bytes data]
+buf: { (#3) [40 bytes data]
+{
+  "answer": " - Vancouver, British Columbia, Canada"
+}
+buf: { (#3) [5 bytes data]
+buf: { (#3) [13 bytes data]
+{
+  "answer": "\n10. 2014 -"
+}
+buf: { (#3) [5 bytes data]
+buf: { (#3) [20 bytes data]
+{
+  "answer": " Sochi, Russia\n11."
+}
+buf: { (#3) [5 bytes data]
+buf: { (#3) [16 bytes data]
+{
+  "answer": " 2018 - Pyeong"
+}
+buf: { (#3) [5 bytes data]
+buf: { (#3) [24 bytes data]
+{
+  "answer": "chang, South Korea\n12."
+}
+buf: < (#3)
+buf: < (#3) Grpc-Message:
+buf: < (#3) Grpc-Status: 0
+buf: * (#3) Call complete
+buf: < (#2)
+buf: < (#2) Grpc-Message:
+buf: < (#2) Grpc-Status: 0
+buf: * (#2) Call complete
+%
+```
 
 ### 🔗 Multiple Services with Custom Interceptors
 

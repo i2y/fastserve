@@ -45,6 +45,30 @@ class OlympicsLocationAgentServer(ConnecpyServer):
         return "olympicslocationagent.v1.OlympicsLocationAgent"
 
 
+class OlympicsLocationAgentSync(Protocol):
+    def Ask(self, req: _pb2.Olympics, ctx: ServiceContext) -> _pb2.CityLocation: ...
+
+
+class OlympicsLocationAgentServerSync(ConnecpyServer):
+    def __init__(self, *, service: OlympicsLocationAgentSync, server_path_prefix=""):
+        super().__init__()
+        self._prefix = (
+            f"{server_path_prefix}/olympicslocationagent.v1.OlympicsLocationAgent"
+        )
+        self._endpoints = {
+            "Ask": Endpoint[_pb2.Olympics, _pb2.CityLocation](
+                service_name="OlympicsLocationAgent",
+                name="Ask",
+                function=getattr(service, "Ask"),
+                input=_pb2.Olympics,
+                output=_pb2.CityLocation,
+            ),
+        }
+
+    def serviceName(self):
+        return "olympicslocationagent.v1.OlympicsLocationAgent"
+
+
 class OlympicsLocationAgentClient(ConnecpyClient):
     def Ask(
         self,

@@ -1062,19 +1062,19 @@ wheels = [
 
 [[package]]
 name = "pydantic-ai"
-version = "0.0.20"
+version = "0.0.23"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "pydantic-ai-slim", extra = ["anthropic", "cohere", "graph", "groq", "mistral", "openai", "vertexai"] },
+    { name = "pydantic-ai-slim", extra = ["anthropic", "cohere", "groq", "mistral", "openai", "vertexai"] },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/3e/84/3b45d32c217f2c23a843a205b586e406deb0fb5bbd8ca2154f2b00f09cec/pydantic_ai-0.0.20.tar.gz", hash = "sha256:4d2255396420034d7a557ba57ef87cb65bb01ca4695b7202cb82bb2bcdd28a76", size = 70042 }
+sdist = { url = "https://files.pythonhosted.org/packages/04/16/29a08131c72f0b9216ed360d4b270522cadd753f9a0dd206b68be286ed09/pydantic_ai-0.0.23.tar.gz", hash = "sha256:61d79e163205288576e7f157c89b65a7bd642b24b266a2434b8cbcb375d987b9", size = 71228 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/04/36/dfb68ad5c42eb496ab1b529d3f0a4e8ad84c92accab2a5c7c9efd9ce79a1/pydantic_ai-0.0.20-py3-none-any.whl", hash = "sha256:52553460e55e194d179c486fd38b60e357609b9b55782af8e9afa1cacd62fbaf", size = 9799 },
+    { url = "https://files.pythonhosted.org/packages/49/75/3d4203a8d36c478a3770f1164b02ac032bf7a3f0445f22deb72b0ae997d2/pydantic_ai-0.0.23-py3-none-any.whl", hash = "sha256:e4a00883c9b2324839dd1d2cbf5ff3aaffe8339de61de991dd2da1756de87d9d", size = 9836 },
 ]
 
 [[package]]
 name = "pydantic-ai-slim"
-version = "0.0.20"
+version = "0.0.23"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "eval-type-backport" },
@@ -1082,10 +1082,11 @@ dependencies = [
     { name = "httpx" },
     { name = "logfire-api" },
     { name = "pydantic" },
+    { name = "pydantic-graph" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/76/15/92b646ea4e6d81907bbba64f6c39739af1846b52a20e59baa66f4c6d0f8a/pydantic_ai_slim-0.0.20.tar.gz", hash = "sha256:b5a8763a8b837c9c9040390841874c6ce1ad149d9f739128f27fba8b9449a620", size = 70442 }
+sdist = { url = "https://files.pythonhosted.org/packages/5e/1c/a0b7aae26f67fa53909cf40ffdef574cc7e1de4967857be07e954e214ea5/pydantic_ai_slim-0.0.23.tar.gz", hash = "sha256:383f4efdb9b1bb522b42ac236690ea3590e8736ac62d7c9f98f5b42a7139454d", size = 73562 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/35/2f/f66f99711a536b8ddcc9cc9c7f6b1bbe841d5ad4c2e302be4f0460c180fe/pydantic_ai_slim-0.0.20-py3-none-any.whl", hash = "sha256:4e0041fe437c5aa1ac892157193ac0d3f2fc7e8fdfb296b60c9dc017b30a1211", size = 91644 },
+    { url = "https://files.pythonhosted.org/packages/f8/b3/44d322b5313ddc6371b133d8f9535e7a1490ba4be90527d4504fcb9a8901/pydantic_ai_slim-0.0.23-py3-none-any.whl", hash = "sha256:fb9714667a7c9b5ced769f2bcab7be9619470dde3aaf44aabdcef5787dce79f3", size = 94573 },
 ]
 
 [package.optional-dependencies]
@@ -1094,9 +1095,6 @@ anthropic = [
 ]
 cohere = [
     { name = "cohere" },
-]
-graph = [
-    { name = "pydantic-graph" },
 ]
 groq = [
     { name = "groq" },
@@ -1167,16 +1165,16 @@ wheels = [
 
 [[package]]
 name = "pydantic-graph"
-version = "0.0.20"
+version = "0.0.23"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "httpx" },
     { name = "logfire-api" },
     { name = "pydantic" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/a6/63/f6d68c4efde39a8ef383cf6ff7043a46093a7334adc3ed2547c6b818930d/pydantic_graph-0.0.20.tar.gz", hash = "sha256:f0d53a6b91ec4feff7674209b517de3f4265c1ea3bea8bc40266e6928e4b8415", size = 13350 }
+sdist = { url = "https://files.pythonhosted.org/packages/99/02/91ab02a179fa94c0214abbb0267c6c3c4f6845d4d4552de1db4ea0dfec87/pydantic_graph-0.0.23.tar.gz", hash = "sha256:9ddd1fe7d24cc048a01bc10333c23635b9a8a3e37c2ece34a6967a8314d62cb6", size = 13694 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/88/ef/d81a2713947a789d9cc2ad3584be0015fb774ae233541fadbe41338bcc65/pydantic_graph-0.0.20-py3-none-any.whl", hash = "sha256:334407bc04e539ddd81163890579d66e74e414d74b1ea11b2723b7d0072b8382", size = 16586 },
+    { url = "https://files.pythonhosted.org/packages/c4/49/39b0fe94fda7d8744b39be58a3557d5460bc36afb9ebac0cf9939174c791/pydantic_graph-0.0.23-py3-none-any.whl", hash = "sha256:b1e4f17dbb72d9828a3699f328c8588825295a5451cdd5bb8aca9c99a99062f0", size = 16861 },
 ]
 
 [[package]]
@@ -1214,7 +1212,7 @@ requires-dist = [
 [package.metadata.requires-dev]
 dev = [
     { name = "hypercorn", specifier = ">=0.17.3" },
-    { name = "pydantic-ai", specifier = "==0.0.20" },
+    { name = "pydantic-ai", specifier = ">=0.0.23" },
     { name = "pytest", specifier = ">=8.3.4" },
     { name = "pytest-asyncio", specifier = ">=0.20.3" },
     { name = "ruff", specifier = ">=0.9.4" },
