@@ -1,8 +1,10 @@
 import asyncio
 from typing import Annotated, AsyncIterator
 
+from openai import AsyncOpenAI
 from pydantic import Field
 from pydantic_ai import Agent
+from pydantic_ai.models.openai import OpenAIModel
 from pydantic_rpc import AsyncIOServer, Message
 
 
@@ -35,14 +37,15 @@ class StreamingResult(Message):
 
 class OlympicsAgent:
     def __init__(self):
-        # # if pydantic_ai >= 0.0.21
-        # ollama_model = OpenAIModel(
-        #     model_name="llama3.2",
-        #     base_url="http://localhost:11434/v1",
-        #     api_key="",
-        # )
-        # self._agent = Agent(ollama_model)
-        self._agent = Agent("ollama:llama3.2")
+        client = AsyncOpenAI(
+            base_url="http://localhost:11434/v1",
+            api_key="ollama_api_key",
+        )
+        ollama_model = OpenAIModel(
+            model_name="llama3.2",
+            openai_client=client,
+        )
+        self._agent = Agent(ollama_model)
 
     async def ask(self, req: OlympicsQuery) -> CityLocation:
         result = await self._agent.run(req.prompt(), result_type=CityLocation)

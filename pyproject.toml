@@ -27,7 +27,7 @@ build-backend = "hatchling.build"
 managed = true
 dev-dependencies = [
     "hypercorn>=0.17.3",
-    "pydantic-ai==0.0.20",
+    "pydantic-ai>=0.0.23",
     "pytest>=8.3.4",
     "pytest-asyncio>=0.20.3",
     "ruff>=0.9.4",

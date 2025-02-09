@@ -4,8 +4,10 @@ from typing import Annotated
 
 from hypercorn.asyncio import serve
 from hypercorn.config import Config
+from openai import AsyncOpenAI
 from pydantic import Field
 from pydantic_ai import Agent
+from pydantic_ai.models.openai import OpenAIModel
 from pydantic_rpc import ConnecpyASGIApp, Message
 
 
@@ -27,14 +29,15 @@ class Olympics(Message):
 
 class OlympicsLocationAgent:
     def __init__(self):
-        # # if pydantic_ai >= 0.0.21
-        # ollama_model = OpenAIModel(
-        #     model_name="llama3.2",
-        #     base_url="http://localhost:11434/v1",
-        #     api_key="",
-        # )
-        # self._agent = Agent(ollama_model, result_type=CityLocation)
-        self._agent = Agent("ollama:llama3.2", result_type=CityLocation)
+        client = AsyncOpenAI(
+            base_url="http://localhost:11434/v1",
+            api_key="ollama_api_key",
+        )
+        ollama_model = OpenAIModel(
+            model_name="llama3.2",
+            openai_client=client,
+        )
+        self._agent = Agent(ollama_model, result_type=CityLocation)
 
     async def ask(self, req: Olympics) -> CityLocation:
         result = await self._agent.run(req.prompt())
