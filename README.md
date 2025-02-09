@@ -8,7 +8,9 @@ Below is an example of a simple gRPC service that exposes a [PydanticAI](https:/
 ```python
 import asyncio
 
+from openai import AsyncOpenAI
 from pydantic_ai import Agent
+from pydantic_ai.models.openai import OpenAIModel
 from pydantic_rpc import AsyncIOServer, Message
 
 
@@ -27,7 +29,15 @@ class Olympics(Message):
 
 class OlympicsLocationAgent:
     def __init__(self):
-        self._agent = Agent("ollama:llama3.2", result_type=CityLocation)
+        client = AsyncOpenAI(
+            base_url="http://localhost:11434/v1",
+            api_key="ollama_api_key",
+        )
+        ollama_model = OpenAIModel(
+            model_name="llama3.2",
+            openai_client=client,
+        )
+        self._agent = Agent(ollama_model)
 
     async def ask(self, req: Olympics) -> CityLocation:
         result = await self._agent.run(req.prompt())
@@ -45,7 +55,9 @@ And here is an example of a simple Connect RPC service that exposes the same age
 ```python
 import asyncio
 
+from openai import AsyncOpenAI
 from pydantic_ai import Agent
+from pydantic_ai.models.openai import OpenAIModel
 from pydantic_rpc import ConnecpyASGIApp, Message
 
 
@@ -63,7 +75,14 @@ class Olympics(Message):
 
 class OlympicsLocationAgent:
     def __init__(self):
-        self._agent = Agent("ollama:llama3.2", result_type=CityLocation)
+        client = AsyncOpenAI(
+            base_url="http://localhost:11434/v1",
+            api_key="ollama_api_key",
+        )
+        ollama_model = OpenAIModel(
+            model_name="llama3.2",
+            openai_client=client,
+        )
 
     async def ask(self, req: Olympics) -> CityLocation:
         result = await self._agent.run(req.prompt())
@@ -253,8 +272,10 @@ Please see the sample code below:
 import asyncio
 from typing import Annotated, AsyncIterator
 
+from openai import AsyncOpenAI
 from pydantic import Field
 from pydantic_ai import Agent
+from pydantic_ai.models.openai import OpenAIModel
 from pydantic_rpc import AsyncIOServer, Message
 
 
