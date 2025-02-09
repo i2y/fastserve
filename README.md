@@ -83,6 +83,7 @@ class OlympicsLocationAgent:
             model_name="llama3.2",
             openai_client=client,
         )
+        self._agent = Agent(ollama_model, result_type=CityLocation)
 
     async def ask(self, req: Olympics) -> CityLocation:
         result = await self._agent.run(req.prompt())
