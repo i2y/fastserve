@@ -38,6 +38,7 @@ class OlympicsLocationAgentServer(ConnecpyServer):
                 function=getattr(service, "Ask"),
                 input=_pb2.Olympics,
                 output=_pb2.CityLocation,
+                allowed_methods=("POST",),
             ),
         }
 
@@ -62,6 +63,7 @@ class OlympicsLocationAgentServerSync(ConnecpyServer):
                 function=getattr(service, "Ask"),
                 input=_pb2.Olympics,
                 output=_pb2.CityLocation,
+                allowed_methods=("POST",),
             ),
         }
 
@@ -78,11 +80,13 @@ class OlympicsLocationAgentClient(ConnecpyClient):
         server_path_prefix: str = "",
         **kwargs,
     ) -> _pb2.CityLocation:
+        method = "POST"
         return self._make_request(
             url=f"{server_path_prefix}/olympicslocationagent.v1.OlympicsLocationAgent/Ask",
             ctx=ctx,
             request=request,
             response_obj=_pb2.CityLocation,
+            method=method,
             **kwargs,
         )
 
@@ -97,11 +101,13 @@ class AsyncOlympicsLocationAgentClient(AsyncConnecpyClient):
         session: Union[httpx.AsyncClient, None] = None,
         **kwargs,
     ) -> _pb2.CityLocation:
+        method = "POST"
         return await self._make_request(
             url=f"{server_path_prefix}/olympicslocationagent.v1.OlympicsLocationAgent/Ask",
             ctx=ctx,
             request=request,
             response_obj=_pb2.CityLocation,
+            method=method,
             session=session,
             **kwargs,
         )
