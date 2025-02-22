@@ -36,6 +36,7 @@ class EchoServiceServer(ConnecpyServer):
                 function=getattr(service, "Echo"),
                 input=_pb2.EchoRequest,
                 output=_pb2.EchoResponse,
+                allowed_methods=("POST",),
             ),
         }
 
@@ -58,6 +59,7 @@ class EchoServiceServerSync(ConnecpyServer):
                 function=getattr(service, "Echo"),
                 input=_pb2.EchoRequest,
                 output=_pb2.EchoResponse,
+                allowed_methods=("POST",),
             ),
         }
 
@@ -74,11 +76,13 @@ class EchoServiceClient(ConnecpyClient):
         server_path_prefix: str = "",
         **kwargs,
     ) -> _pb2.EchoResponse:
+        method = "POST"
         return self._make_request(
             url=f"{server_path_prefix}/echo.v1.EchoService/Echo",
             ctx=ctx,
             request=request,
             response_obj=_pb2.EchoResponse,
+            method=method,
             **kwargs,
         )
 
@@ -93,11 +97,13 @@ class AsyncEchoServiceClient(AsyncConnecpyClient):
         session: Union[httpx.AsyncClient, None] = None,
         **kwargs,
     ) -> _pb2.EchoResponse:
+        method = "POST"
         return await self._make_request(
             url=f"{server_path_prefix}/echo.v1.EchoService/Echo",
             ctx=ctx,
             request=request,
             response_obj=_pb2.EchoResponse,
+            method=method,
             session=session,
             **kwargs,
         )

@@ -1,4 +1,3 @@
-from connecpy.compression import CompressionMiddleware
 from pydantic_rpc import ConnecpyASGIApp, Message
 
 
@@ -43,4 +42,3 @@ class Greeter:
 
 app = ConnecpyASGIApp()
 app.mount(Greeter())
-app = CompressionMiddleware(app)

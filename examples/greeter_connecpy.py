@@ -36,6 +36,7 @@ class GreeterServer(ConnecpyServer):
                 function=getattr(service, "SayHello"),
                 input=_pb2.HelloRequest,
                 output=_pb2.HelloReply,
+                allowed_methods=("POST",),
             ),
         }
 
@@ -60,6 +61,7 @@ class GreeterServerSync(ConnecpyServer):
                 function=getattr(service, "SayHello"),
                 input=_pb2.HelloRequest,
                 output=_pb2.HelloReply,
+                allowed_methods=("POST",),
             ),
         }
 
@@ -76,11 +78,13 @@ class GreeterClient(ConnecpyClient):
         server_path_prefix: str = "",
         **kwargs,
     ) -> _pb2.HelloReply:
+        method = "POST"
         return self._make_request(
             url=f"{server_path_prefix}/greeter.v1.Greeter/SayHello",
             ctx=ctx,
             request=request,
             response_obj=_pb2.HelloReply,
+            method=method,
             **kwargs,
         )
 
@@ -95,11 +99,13 @@ class AsyncGreeterClient(AsyncConnecpyClient):
         session: Union[httpx.AsyncClient, None] = None,
         **kwargs,
     ) -> _pb2.HelloReply:
+        method = "POST"
         return await self._make_request(
             url=f"{server_path_prefix}/greeter.v1.Greeter/SayHello",
             ctx=ctx,
             request=request,
             response_obj=_pb2.HelloReply,
+            method=method,
             session=session,
             **kwargs,
         )

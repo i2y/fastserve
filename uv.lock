@@ -352,18 +352,20 @@ wheels = [
 
 [[package]]
 name = "connecpy"
-version = "1.3.2"
+version = "1.4.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
+    { name = "brotli" },
     { name = "brotli-asgi" },
     { name = "httpx" },
     { name = "protobuf" },
     { name = "starlette" },
+    { name = "zstandard" },
     { name = "zstd-asgi" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/c3/9a/5de739ad029d32cd8a82d813ca5144deccaff87a2562fa8bae70cb300a7a/connecpy-1.3.2.tar.gz", hash = "sha256:97bc68fc77d05a3b16d11f679ba08a4386c58d19ccc267165d64000533f7bbf2", size = 76963 }
+sdist = { url = "https://files.pythonhosted.org/packages/a5/ae/76ff7bf110ae2e8d6f2eaee30bfb9fe27e406735bee71ad7c3cc704b8b10/connecpy-1.4.1.tar.gz", hash = "sha256:c8b8a48acf80cabccd03d98b6ababdda6cd672e51e54ffc84fa8012a2e94b617", size = 85007 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/92/0a/6f9a7a60b99bc73813c2b78d841f69f1a47a355a13e12bb53c882f18583c/connecpy-1.3.2-py3-none-any.whl", hash = "sha256:d6978808190065ff155cc9d1ba58ed138764fb9cb5d96e2ccd0bace3b29870b7", size = 20291 },
+    { url = "https://files.pythonhosted.org/packages/ed/b7/fe625cc186df9acb46c88ffda3247abb7077498c487be96aee5fa1a55dd3/connecpy-1.4.1-py3-none-any.whl", hash = "sha256:d7570fcfa076b008e477f6ec646ba0a64c4dc523ce8f161c9c699ee9238499ab", size = 26928 },
 ]
 
 [[package]]
@@ -1062,19 +1064,19 @@ wheels = [
 
 [[package]]
 name = "pydantic-ai"
-version = "0.0.23"
+version = "0.0.24"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "pydantic-ai-slim", extra = ["anthropic", "cohere", "groq", "mistral", "openai", "vertexai"] },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/04/16/29a08131c72f0b9216ed360d4b270522cadd753f9a0dd206b68be286ed09/pydantic_ai-0.0.23.tar.gz", hash = "sha256:61d79e163205288576e7f157c89b65a7bd642b24b266a2434b8cbcb375d987b9", size = 71228 }
+sdist = { url = "https://files.pythonhosted.org/packages/10/8a/0a9ff28b5956077f162dec57e96eeb5ea322cb1bba9c85f02d008966e1b4/pydantic_ai-0.0.24.tar.gz", hash = "sha256:7af076cbdb5f4c6ac8fae5273f02b67130b69d1cdaed87a022f79f42449f83a9", size = 71314 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/49/75/3d4203a8d36c478a3770f1164b02ac032bf7a3f0445f22deb72b0ae997d2/pydantic_ai-0.0.23-py3-none-any.whl", hash = "sha256:e4a00883c9b2324839dd1d2cbf5ff3aaffe8339de61de991dd2da1756de87d9d", size = 9836 },
+    { url = "https://files.pythonhosted.org/packages/96/94/e7dbc5acf86a24442d21df4b8453a267614c3a6d9cd52ce0c685de2d7d19/pydantic_ai-0.0.24-py3-none-any.whl", hash = "sha256:dc75f01be0218c2f46fe90a3d43ef4700d764bfbe6240fca9c18a4509f6b86cf", size = 9837 },
 ]
 
 [[package]]
 name = "pydantic-ai-slim"
-version = "0.0.23"
+version = "0.0.24"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "eval-type-backport" },
@@ -1084,9 +1086,9 @@ dependencies = [
     { name = "pydantic" },
     { name = "pydantic-graph" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/5e/1c/a0b7aae26f67fa53909cf40ffdef574cc7e1de4967857be07e954e214ea5/pydantic_ai_slim-0.0.23.tar.gz", hash = "sha256:383f4efdb9b1bb522b42ac236690ea3590e8736ac62d7c9f98f5b42a7139454d", size = 73562 }
+sdist = { url = "https://files.pythonhosted.org/packages/90/05/baff139032ecdb930f00760c652d782934bc63da57c2ecc1c48d4c9b8898/pydantic_ai_slim-0.0.24.tar.gz", hash = "sha256:c82d5ffed6d3a149e64701d0e4cfa09256a8ef9feb296281f908af19050d2bf1", size = 73812 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/f8/b3/44d322b5313ddc6371b133d8f9535e7a1490ba4be90527d4504fcb9a8901/pydantic_ai_slim-0.0.23-py3-none-any.whl", hash = "sha256:fb9714667a7c9b5ced769f2bcab7be9619470dde3aaf44aabdcef5787dce79f3", size = 94573 },
+    { url = "https://files.pythonhosted.org/packages/af/15/715b629b0386f45345ac8a8e97f0d788ab7f728cd8bbe39f724e4c32773e/pydantic_ai_slim-0.0.24-py3-none-any.whl", hash = "sha256:7cd3aec6df572780323169a6dfa114640f76c2e2b21105efcd5cce2b459c7b17", size = 95271 },
 ]
 
 [package.optional-dependencies]
@@ -1165,16 +1167,16 @@ wheels = [
 
 [[package]]
 name = "pydantic-graph"
-version = "0.0.23"
+version = "0.0.24"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "httpx" },
     { name = "logfire-api" },
     { name = "pydantic" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/99/02/91ab02a179fa94c0214abbb0267c6c3c4f6845d4d4552de1db4ea0dfec87/pydantic_graph-0.0.23.tar.gz", hash = "sha256:9ddd1fe7d24cc048a01bc10333c23635b9a8a3e37c2ece34a6967a8314d62cb6", size = 13694 }
+sdist = { url = "https://files.pythonhosted.org/packages/b9/8f/ad685ecca0f610fa204e92f394d190bcab8c9392f7be8f1a83914244d36b/pydantic_graph-0.0.24.tar.gz", hash = "sha256:40550e2310002f411b1fc0636206222caa5459ede7c44da5c856b3526b3096cd", size = 13694 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/c4/49/39b0fe94fda7d8744b39be58a3557d5460bc36afb9ebac0cf9939174c791/pydantic_graph-0.0.23-py3-none-any.whl", hash = "sha256:b1e4f17dbb72d9828a3699f328c8588825295a5451cdd5bb8aca9c99a99062f0", size = 16861 },
+    { url = "https://files.pythonhosted.org/packages/23/f6/2f4ef49e75fcb6070f440f05db2898612ada7f5d889209e98ede2fdb3d19/pydantic_graph-0.0.24-py3-none-any.whl", hash = "sha256:29d763cb77a2533bcbd07ff34fff36316617d1e62a926a7a15df59f6103fc74e", size = 16860 },
 ]
 
 [[package]]
@@ -1201,7 +1203,7 @@ dev = [
 
 [package.metadata]
 requires-dist = [
-    { name = "connecpy", specifier = ">=1.3.2" },
+    { name = "connecpy", specifier = ">=1.4.1" },
     { name = "grpcio-health-checking", specifier = ">=1.56.2" },
     { name = "grpcio-reflection", specifier = ">=1.56.2" },
     { name = "grpcio-tools", specifier = ">=1.56.2" },
@@ -1212,7 +1214,7 @@ requires-dist = [
 [package.metadata.requires-dev]
 dev = [
     { name = "hypercorn", specifier = ">=0.17.3" },
-    { name = "pydantic-ai", specifier = ">=0.0.23" },
+    { name = "pydantic-ai", specifier = ">=0.0.24" },
     { name = "pytest", specifier = ">=8.3.4" },
     { name = "pytest-asyncio", specifier = ">=0.20.3" },
     { name = "ruff", specifier = ">=0.9.4" },
